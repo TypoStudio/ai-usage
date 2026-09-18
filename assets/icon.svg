@@ -1,0 +1,28 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- focus-play 아이콘과 같은 틀: 남색 그라데이션 배경, 둥근 모서리, 중앙 글로우, 노란 별 장식 -->
+  <defs>
+    <linearGradient id="ibg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#222c55"/>
+      <stop offset="1" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <radialGradient id="iglow" cx="0.5" cy="0.5" r="0.5">
+      <stop stop-color="#7c8cf8" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#7c8cf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" ry="224" fill="url(#ibg)"/>
+  <ellipse cx="512" cy="480" rx="430" ry="380" fill="url(#iglow)"/>
+
+  <!-- 활동 링: 바깥 5시간, 가운데 주간, 안쪽 주간 Fable -->
+  <circle cx="512" cy="512" r="232" stroke="#ffb547" stroke-opacity="0.2" stroke-width="56"/>
+  <circle cx="512" cy="512" r="232" stroke="#ffb547" stroke-width="56" stroke-linecap="round" stroke-dasharray="1049.5 1457.7" transform="rotate(-90 512 512)"/>
+  <circle cx="512" cy="512" r="166" stroke="#b36bff" stroke-opacity="0.2" stroke-width="56"/>
+  <circle cx="512" cy="512" r="166" stroke="#b36bff" stroke-width="56" stroke-linecap="round" stroke-dasharray="542.4 1043.0" transform="rotate(-90 512 512)"/>
+  <circle cx="512" cy="512" r="100" stroke="#4de3c1" stroke-opacity="0.2" stroke-width="56"/>
+  <circle cx="512" cy="512" r="100" stroke="#4de3c1" stroke-width="56" stroke-linecap="round" stroke-dasharray="540.4 628.3" transform="rotate(-90 512 512)"/>
+
+  <!-- star accents -->
+  <circle cx="806" cy="240" r="16" fill="#ffd76b"/>
+  <circle cx="858" cy="310" r="10" fill="#ffe8a8"/>
+</svg>

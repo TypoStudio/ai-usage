@@ -1,0 +1,96 @@
+name: AIUsage
+options:
+  bundleIdPrefix: com.typostudio
+  deploymentTarget:
+    macOS: "14.0"
+  developmentLanguage: ko
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # 팀은 환경 변수로 바꿀 수 있다: AIUSAGE_TEAM=XXXXXXXXXX xcodegen
+    DEVELOPMENT_TEAM: ${AIUSAGE_TEAM}
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "Apple Development"
+    ENABLE_HARDENED_RUNTIME: NO
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+packages:
+  AIUsageCore:
+    path: Packages/AIUsageCore
+targets:
+  AIUsage:
+    type: application
+    platform: macOS
+    sources:
+      - AIUsage
+      - Shared
+    dependencies:
+      - package: AIUsageCore
+      - target: AIUsageWidget
+        embed: true
+        codeSign: true
+    entitlements:
+      path: AIUsage/AIUsage.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(TeamIdentifierPrefix)com.typostudio.aiusage
+    info:
+      path: AIUsage/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDisplayName: AI Usage
+        # The widget gallery groups by CFBundleName, not by the display name — without this it
+        # reads "AIUsage", because the default is PRODUCT_NAME (which is also the bundle folder
+        # and the executable, so it stays as it is).
+        CFBundleName: AI Usage
+        CFBundleDevelopmentRegion: ko
+        CFBundleLocalizations: [ko, en, ja]
+        LSApplicationCategoryType: public.app-category.developer-tools
+        AIUsageAppGroup: $(TeamIdentifierPrefix)com.typostudio.aiusage
+        CFBundleURLTypes:
+          - CFBundleURLName: com.typostudio.aiusage
+            CFBundleURLSchemes: [aiusage]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.typostudio.aiusage
+        PRODUCT_NAME: AIUsage
+        GENERATE_INFOPLIST_FILE: NO
+        # 원본 assets/icon.svg → icon-1024.png → AIUsage/Assets.xcassets/AppIcon.appiconset
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  AIUsageWidget:
+    type: app-extension
+    platform: macOS
+    sources:
+      - AIUsageWidget
+      - Shared
+    dependencies:
+      - package: AIUsageCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    entitlements:
+      path: AIUsageWidget/AIUsageWidget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - $(TeamIdentifierPrefix)com.typostudio.aiusage
+    info:
+      path: AIUsageWidget/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDisplayName: AI Usage
+        CFBundleName: AI Usage
+        CFBundleDevelopmentRegion: ko
+        AIUsageAppGroup: $(TeamIdentifierPrefix)com.typostudio.aiusage
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.typostudio.aiusage.widget
+        PRODUCT_NAME: AIUsageWidget
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES

@@ -1,0 +1,55 @@
+<svg width="1280" height="400" viewBox="0 0 1280 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a0e1a"/>
+      <stop offset="1" stop-color="#161b30"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#a9b4d6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop stop-color="#7c8cf8" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#7c8cf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="400" rx="24" fill="url(#bg)"/>
+  <ellipse cx="980" cy="200" rx="360" ry="300" fill="url(#glow)"/>
+
+  <!-- 계정 3개 = 게이지 3개 -->
+  <g>
+    <circle cx="790" cy="200" r="70" stroke="#ffb547" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="790" cy="200" r="70" stroke="#ffb547" stroke-width="16" stroke-linecap="round" stroke-dasharray="101.2 439.8" transform="rotate(-90 790 200)"/>
+    <circle cx="790" cy="200" r="50" stroke="#b36bff" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="790" cy="200" r="50" stroke="#b36bff" stroke-width="16" stroke-linecap="round" stroke-dasharray="128.8 314.2" transform="rotate(-90 790 200)"/>
+    <circle cx="790" cy="200" r="30" stroke="#4de3c1" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="790" cy="200" r="30" stroke="#4de3c1" stroke-width="16" stroke-linecap="round" stroke-dasharray="67.9 188.5" transform="rotate(-90 790 200)"/>
+    <circle cx="980" cy="200" r="70" stroke="#ffb547" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="980" cy="200" r="70" stroke="#ffb547" stroke-width="16" stroke-linecap="round" stroke-dasharray="281.5 439.8" transform="rotate(-90 980 200)"/>
+    <circle cx="980" cy="200" r="50" stroke="#b36bff" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="980" cy="200" r="50" stroke="#b36bff" stroke-width="16" stroke-linecap="round" stroke-dasharray="226.2 314.2" transform="rotate(-90 980 200)"/>
+    <circle cx="980" cy="200" r="30" stroke="#4de3c1" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="980" cy="200" r="30" stroke="#4de3c1" stroke-width="16" stroke-linecap="round" stroke-dasharray="33.9 188.5" transform="rotate(-90 980 200)"/>
+    <circle cx="1170" cy="200" r="70" stroke="#ffb547" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="1170" cy="200" r="70" stroke="#ffb547" stroke-width="16" stroke-linecap="round" stroke-dasharray="197.9 439.8" transform="rotate(-90 1170 200)"/>
+    <circle cx="1170" cy="200" r="50" stroke="#b36bff" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="1170" cy="200" r="50" stroke="#b36bff" stroke-width="16" stroke-linecap="round" stroke-dasharray="182.2 314.2" transform="rotate(-90 1170 200)"/>
+    <circle cx="1170" cy="200" r="30" stroke="#4de3c1" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="1170" cy="200" r="30" stroke="#4de3c1" stroke-width="16" stroke-linecap="round" stroke-dasharray="152.7 188.5" transform="rotate(-90 1170 200)"/>
+  </g>
+
+  <!-- ring glyph + stars -->
+  <g>
+    <circle cx="166" cy="170" r="58" stroke="#ffb547" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="166" cy="170" r="58" stroke="#ffb547" stroke-width="16" stroke-linecap="round" stroke-dasharray="273.3 364.4" transform="rotate(-90 166 170)"/>
+    <circle cx="166" cy="170" r="38" stroke="#b36bff" stroke-opacity="0.2" stroke-width="16"/>
+    <circle cx="166" cy="170" r="38" stroke="#b36bff" stroke-width="16" stroke-linecap="round" stroke-dasharray="131.3 238.8" transform="rotate(-90 166 170)"/>
+    <circle cx="246" cy="112" r="6" fill="#ffd76b"/>
+    <circle cx="264" cy="140" r="4" fill="#ffe8a8"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="96" y="310" font-family="Sora, -apple-system, Helvetica, Arial, sans-serif" font-size="82" font-weight="800" fill="url(#title)" letter-spacing="-2">AI Usage</text>
+  <text x="100" y="354" font-family="Sora, -apple-system, Helvetica, Arial, sans-serif" font-size="24" font-weight="600" fill="#8e99c0">Claude Code &amp; Codex limits as activity rings on your desktop</text>
+</svg>

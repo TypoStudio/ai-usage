@@ -1,0 +1,1186 @@
+{
+  "sourceLanguage": "ko",
+  "version": "1.0",
+  "strings": {
+    "": {
+      "shouldTranslate": false
+    },
+    "%@": {
+      "shouldTranslate": false
+    },
+    "%@ 다운로드 중…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloading %@…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ をダウンロード中…"
+          }
+        }
+      }
+    },
+    "%@ 설치 중…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installing %@…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ をインストール中…"
+          }
+        }
+      }
+    },
+    "%@ 토큰 갱신 실패": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ token refresh failed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ のトークン更新に失敗"
+          }
+        }
+      }
+    },
+    "%lld분": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld分"
+          }
+        }
+      }
+    },
+    ".claude.json 또는 auth.json 이 있는 설정 디렉토리를 고르세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a config directory that contains .claude.json or auth.json."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": ".claude.json または auth.json がある設定ディレクトリを選んでください。"
+          }
+        }
+      }
+    },
+    "AI Usage": {
+      "shouldTranslate": false
+    },
+    "AI Usage %@ 을(를) 설치할 수 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI Usage %@ is ready to install."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI Usage %@ をインストールできます。"
+          }
+        }
+      }
+    },
+    "ChatGPT 토큰 없음": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No ChatGPT token"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ChatGPT トークンなし"
+          }
+        }
+      }
+    },
+    "Claude Code 사용량": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code Usage"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code 使用量"
+          }
+        }
+      }
+    },
+    "Claude 계정": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude アカウント"
+          }
+        }
+      }
+    },
+    "Claude 계정 선택": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Claude Account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude アカウントを選択"
+          }
+        }
+      }
+    },
+    "Codex 계정": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex Account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex アカウント"
+          }
+        }
+      }
+    },
+    "Codex 계정 선택": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Codex Account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex アカウントを選択"
+          }
+        }
+      }
+    },
+    "Codex 사용량": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex Usage"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex 使用量"
+          }
+        }
+      }
+    },
+    "Finder에서 보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in Finder"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder で表示"
+          }
+        }
+      }
+    },
+    "auth.json 없음": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No auth.json"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "auth.json なし"
+          }
+        }
+      }
+    },
+    "claude 경로": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "claude path"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "claude のパス"
+          }
+        }
+      }
+    },
+    "codex 경로": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "codex path"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "codex のパス"
+          }
+        }
+      }
+    },
+    "small 크기에서 보여 줄 계정. 비우면 첫 번째 계정.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account shown in the small size. Leave empty for the first account."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小サイズで表示するアカウント。空欄なら最初のアカウント。"
+          }
+        }
+      }
+    },
+    "© 2026 TypoStudio": {
+      "shouldTranslate": false
+    },
+    "갱신": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新"
+          }
+        }
+      }
+    },
+    "갱신 주기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh interval"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新間隔"
+          }
+        }
+      }
+    },
+    "갱신 중…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refreshing…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新中…"
+          }
+        }
+      }
+    },
+    "경로 추가…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Path…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パスを追加…"
+          }
+        }
+      }
+    },
+    "계정": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウント"
+          }
+        }
+      }
+    },
+    "계정마다 링 게이지 하나. 바깥 5시간, 가운데 7일.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One ring gauge per account. Outer: 5 hours, middle: 7 days."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウントごとにリングゲージ1つ。外側は5時間、中央は7日。"
+          }
+        }
+      }
+    },
+    "계정마다 링 게이지 하나. 바깥 5시간, 가운데 주간, 안쪽 주간 Fable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One ring gauge per account. Outer: 5 hours, middle: weekly, inner: weekly Fable."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウントごとにリングゲージ1つ。外側は5時間、中央は週間、内側は週間 Fable。"
+          }
+        }
+      }
+    },
+    "나중에": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "後で"
+          }
+        }
+      }
+    },
+    "다시 탐지": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rescan"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再検出"
+          }
+        }
+      }
+    },
+    "닫기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じる"
+          }
+        }
+      }
+    },
+    "라벨": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Label"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ラベル"
+          }
+        }
+      }
+    },
+    "로그인 시 실행": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launch at login"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログイン時に起動"
+          }
+        }
+      }
+    },
+    "리셋까지 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resets in %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リセットまで %@"
+          }
+        }
+      }
+    },
+    "릴리즈 페이지 열기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Release Page"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リリースページを開く"
+          }
+        }
+      }
+    },
+    "마지막 갱신 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last updated %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最終更新 %@"
+          }
+        }
+      }
+    },
+    "버전 %@ (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ (%@)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン %@ (%@)"
+          }
+        }
+      }
+    },
+    "복사": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コピー"
+          }
+        }
+      }
+    },
+    "새 버전이 있습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A new version is available"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいバージョンがあります"
+          }
+        }
+      }
+    },
+    "새로고침": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新"
+          }
+        }
+      }
+    },
+    "설정…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定…"
+          }
+        }
+      }
+    },
+    "순서가 위젯의 게이지 순서입니다. 드래그해서 바꾸세요. medium 위젯에는 앞의 3개가 들어갑니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This order is the gauge order in the widget. Drag to change it. The medium widget shows the first three."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この順番がウィジェットのゲージの順番です。ドラッグで変更できます。medium ウィジェットには先頭の3つが入ります。"
+          }
+        }
+      }
+    },
+    "스냅샷 저장 실패: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to save snapshot: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スナップショットの保存に失敗: %@"
+          }
+        }
+      }
+    },
+    "스냅샷 파일": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snapshot file"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スナップショットファイル"
+          }
+        }
+      }
+    },
+    "아직 받은 응답이 없습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No response received yet."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだ応答を受け取っていません。"
+          }
+        }
+      }
+    },
+    "알림": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通知"
+          }
+        }
+      }
+    },
+    "앱 실행 필요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the app"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリを起動して"
+          }
+        }
+      }
+    },
+    "앱을 실행해 계정을 확인하세요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the app to load your accounts"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリを起動してアカウントを読み込んでください"
+          }
+        }
+      }
+    },
+    "업데이트": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アップデート"
+          }
+        }
+      }
+    },
+    "업데이트 실패": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update failed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アップデートに失敗"
+          }
+        }
+      }
+    },
+    "업데이트 자동 확인": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for updates automatically"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アップデートを自動で確認"
+          }
+        }
+      }
+    },
+    "업데이트 확인…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アップデートを確認…"
+          }
+        }
+      }
+    },
+    "요청 제한(429) — %lld분 후 재시도": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rate limited (429) — retrying in %lld min"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リクエスト制限(429) — %lld分後に再試行"
+          }
+        }
+      }
+    },
+    "위젯은 앱이 쓴 값을 보여 줄 뿐입니다. 앱이 꺼져 있으면 위젯 값이 멈춥니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The widget only shows what the app writes. If the app isn't running, the widget stops updating."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ウィジェットはアプリが書いた値を表示するだけです。アプリが終了していると値が止まります。"
+          }
+        }
+      }
+    },
+    "응답 보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Response"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "応答を表示"
+          }
+        }
+      }
+    },
+    "이 계정 숨기기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide This Account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアカウントを隠す"
+          }
+        }
+      }
+    },
+    "인증 실패(%lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authentication failed (%lld)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "認証失敗(%lld)"
+          }
+        }
+      }
+    },
+    "일반": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一般"
+          }
+        }
+      }
+    },
+    "임계치 %lld%%": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Threshold %lld%%"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "しきい値 %lld%%"
+          }
+        }
+      }
+    },
+    "자격 증명 없음": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No credentials"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "認証情報なし"
+          }
+        }
+      }
+    },
+    "자동 탐색": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-detect"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動検出"
+          }
+        }
+      }
+    },
+    "정보": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "情報"
+          }
+        }
+      }
+    },
+    "지금 새로고침": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh Now"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今すぐ更新"
+          }
+        }
+      }
+    },
+    "지금 설치": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install Now"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今すぐインストール"
+          }
+        }
+      }
+    },
+    "직접 다운로드": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download Manually"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手動でダウンロード"
+          }
+        }
+      }
+    },
+    "최신 버전입니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're up to date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最新バージョンです"
+          }
+        }
+      }
+    },
+    "켜진 계정이 없습니다. 설정에서 계정을 켜세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No accounts are on. Turn one on in Settings."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効なアカウントがありません。設定でオンにしてください。"
+          }
+        }
+      }
+    },
+    "크레딧 고갈 알림": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notify when credits run out"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クレジット枯渇を通知"
+          }
+        }
+      }
+    },
+    "터미널 명령 복사": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy Terminal Command"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ターミナルコマンドをコピー"
+          }
+        }
+      }
+    },
+    "터미널에서 한 번 실행해 주세요: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run this once in Terminal: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ターミナルで一度実行してください: %@"
+          }
+        }
+      }
+    },
+    "토큰 갱신 실패 알림": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notify when token refresh fails"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン更新失敗を通知"
+          }
+        }
+      }
+    },
+    "토큰 만료": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token expired"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン期限切れ"
+          }
+        }
+      }
+    },
+    "토큰 만료 — claude 실행 파일을 찾지 못함": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token expired — claude executable not found"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン期限切れ — claude 実行ファイルが見つかりません"
+          }
+        }
+      }
+    },
+    "토큰 만료 — 자동 갱신 실패": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token expired — auto-refresh failed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン期限切れ — 自動更新に失敗"
+          }
+        }
+      }
+    },
+    "한도가 임계치를 넘는 순간 한 번 알리고, 리셋된 뒤 다시 알립니다. 링도 이 값부터 빨갛게 바뀝니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifies once when a limit crosses the threshold, and again after it resets. Rings also turn red from this value."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上限がしきい値を超えた瞬間に一度通知し、リセット後に再び通知します。リングもこの値から赤くなります。"
+          }
+        }
+      }
+    },
+    "확인": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    }
+  }
+}
