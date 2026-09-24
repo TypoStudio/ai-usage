@@ -19,6 +19,11 @@ final class UsageModel: ObservableObject {
     /// 429 백오프: 계정별 다음 허용 시각과 현재 지연
     private var backoff: [String: (until: Date, delay: TimeInterval)] = [:]
     private var lastDoctor: [String: Date] = [:]
+    /// `claude doctor` 는 계정이 여러 개라도 한 번에 하나씩만 돌린다
+    private var doctorChain: Task<Void, Never>?
+    /// 화면이 꺼져 있거나 잠자기 중이면 갱신하지 않는다. 다크웨이크(화면 꺼진 채 잠깐 깨는 것) 중에
+    /// 토큰 갱신이 돌다가 잠자기로 끊기면 로그인이 풀린다 (2026-09-24 cld2·cld3 사례).
+    private var screensAsleep = false
     private var lastWidgetReload = Date.distantPast
     private var lastWidgetPayload: Data?
     private var claudeVersion: String?
@@ -81,8 +86,19 @@ final class UsageModel: ObservableObject {
     func start() {
         guard !isDemo else { return }
         scheduleTimer()
-        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { _ in
-            Task { @MainActor in UsageModel.shared.refresh() }
+        let nc = NSWorkspace.shared.notificationCenter
+        for name in [NSWorkspace.screensDidSleepNotification, NSWorkspace.willSleepNotification] {
+            nc.addObserver(forName: name, object: nil, queue: .main) { _ in
+                Task { @MainActor in UsageModel.shared.screensAsleep = true }
+            }
+        }
+        for name in [NSWorkspace.screensDidWakeNotification, NSWorkspace.didWakeNotification] {
+            nc.addObserver(forName: name, object: nil, queue: .main) { _ in
+                Task { @MainActor in
+                    UsageModel.shared.screensAsleep = false
+                    UsageModel.shared.refresh()
+                }
+            }
         }
         refresh()
     }
@@ -102,7 +118,7 @@ final class UsageModel: ObservableObject {
     }
 
     func refresh() {
-        guard !isRefreshing, !isDemo else { return }
+        guard !isRefreshing, !isDemo, !screensAsleep else { return }
         isRefreshing = true
         let targets = enabledAccounts
         Task {
@@ -143,6 +159,8 @@ final class UsageModel: ObservableObject {
             return .failed(String(localized: "자격 증명 없음"), email: email, raw: nil)
         }
         if cred.expiresAt < Date() {
+            // 갱신 토큰이 없으면 doctor 로도 못 살린다 — 괜히 돌리지 않는다
+            guard cred.canRefresh else { return .expired(Self.loginRequired, email: email, raw: nil) }
             // claude doctor 는 계정당 10분에 1회까지
             if let last = lastDoctor[config.id], Date().timeIntervalSince(last) < 600 {
                 return .expired(String(localized: "토큰 만료 — 자동 갱신 실패"), email: email, raw: nil)
@@ -150,10 +168,12 @@ final class UsageModel: ObservableObject {
             guard let claude = Shell.locate("claude", override: UserDefaults.standard.string(forKey: Prefs.claudePath)) else {
                 return .expired(String(localized: "토큰 만료 — claude 실행 파일을 찾지 못함"), email: email, raw: nil)
             }
-            lastDoctor[config.id] = Date()
             var u = usage(for: config); u.status = .refreshing; usages[config.id] = u
-            await ClaudeFetcher.runDoctor(dir: config.id, claudePath: claude)
-            guard let fresh = await ClaudeFetcher.readCredential(dir: config.id), fresh.expiresAt > Date() else {
+            guard await runDoctorSerially(dir: config.id, claudePath: claude) else { return .skipped }
+            guard let fresh = await ClaudeFetcher.readCredential(dir: config.id), fresh.canRefresh else {
+                return .expired(Self.loginRequired, email: email, raw: nil)
+            }
+            guard fresh.expiresAt > Date() else {
                 return .expired(String(localized: "토큰 만료 — 자동 갱신 실패"), email: email, raw: nil)
             }
             cred = fresh
@@ -162,7 +182,24 @@ final class UsageModel: ObservableObject {
                                          version: claudeVersion ?? "2.0.0")
     }
 
+    static let loginRequired = String(localized: "로그인이 풀렸습니다 — 아래 명령으로 Claude Code 를 열고 /login 하세요")
+
+    /// 앞선 doctor 가 끝난 뒤에 실행한다. 차례가 왔을 때 화면이 꺼졌으면 건너뛰고 false.
+    private func runDoctorSerially(dir: String, claudePath: String) async -> Bool {
+        let previous = doctorChain
+        let mine = Task { @MainActor [weak self] () -> Bool in
+            await previous?.value
+            guard let self, !self.screensAsleep else { return false }
+            self.lastDoctor[dir] = Date()
+            await ClaudeFetcher.runDoctor(dir: dir, claudePath: claudePath)
+            return true
+        }
+        doctorChain = Task { _ = await mine.value }
+        return await mine.value
+    }
+
     private func apply(_ outcome: FetchOutcome, to config: AccountConfig) {
+        if case .skipped = outcome { return }
         var u = usage(for: config)
         let now = Date()
         switch outcome {
@@ -183,6 +220,8 @@ final class UsageModel: ObservableObject {
             u.email = email ?? u.email
             if u.fetchedAt == nil { u.status = .error }
             u.error = String(localized: "요청 제한(429) — \(Int(delay / 60))분 후 재시도")
+        case .skipped:
+            return
         case let .failed(msg, email, raw):
             u.email = email ?? u.email; u.status = .error; u.error = msg
             if let raw { rawResponses[config.id] = prettyJSON(raw) }

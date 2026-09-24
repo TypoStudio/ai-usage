@@ -38,8 +38,13 @@ enum Notifier {
                 let key = "expired|\(u.id)"
                 active.insert(key)
                 if !fired.contains(key) {
-                    post(title: String(localized: "\(u.label) 토큰 갱신 실패"),
-                         body: String(localized: "터미널에서 한 번 실행해 주세요: \(AccountCommand.command(for: u))"))
+                    if u.error == UsageModel.loginRequired {
+                        post(title: String(localized: "\(u.label) 다시 로그인 필요"),
+                             body: String(localized: "\(AccountCommand.command(for: u)) 실행 후 /login"))
+                    } else {
+                        post(title: String(localized: "\(u.label) 토큰 갱신 실패"),
+                             body: String(localized: "터미널에서 한 번 실행해 주세요: \(AccountCommand.command(for: u))"))
+                    }
                 }
             }
             // 값을 못 받은 계정(만료·오류·갱신 중)은 이전 한도·경고 키를 유지한다 — 복구 뒤 다시 알리지 않도록

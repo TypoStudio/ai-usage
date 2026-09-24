@@ -25,6 +25,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow?
     private let focus = DetailFocus()
 
+    /// URL(`aiusage://`)은 Apple Event 로 직접 받는다. SwiftUI 수명 주기에 맡기면 이미 떠 있는 앱에서
+    /// 창이 없을 때 이벤트가 `application(_:open:)` 까지 오지 않는 경우가 있다.
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleGetURL(_:withReplyEvent:)),
+                                                     forEventClass: AEEventClass(kInternetEventClass),
+                                                     andEventID: AEEventID(kAEGetURL))
+    }
+
+    @objc private func handleGetURL(_ event: NSAppleEventDescriptor, withReplyEvent reply: NSAppleEventDescriptor) {
+        guard let s = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue, let url = URL(string: s) else { return }
+        open(url)
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         Notifier.requestAuthorization()
         if !UsageModel.shared.isDemo { enableLaunchAtLoginOnce() }
@@ -33,7 +46,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let event = NSAppleEventManager.shared().currentAppleEvent
         let launchedAsLoginItem = event?.eventID == kAEOpenApplication
             && event?.paramDescriptor(forKeyword: keyAEPropData)?.enumCodeValue == keyAELaunchedAsLogInItem
-        if !launchedAsLoginItem { showDetail(provider: nil) }
+        // `--background`: 로그인 시 자동 실행과 같은 상태(창 없음)로 띄운다 — 테스트용
+        if !launchedAsLoginItem, !CommandLine.arguments.contains("--background") { showDetail(provider: nil) }
         if UpdateService.autoCheckEnabled, !UsageModel.shared.isDemo { Self.checkForUpdates(manual: false) }
     }
 
@@ -55,8 +69,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// `aiusage://open?provider=claude`
-    func application(_ application: NSApplication, open urls: [URL]) {
-        guard let url = urls.first, url.scheme == "aiusage" else { return }
+    private func open(_ url: URL) {
+        guard url.scheme == "aiusage" else { return }
         let item = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "provider" }
         showDetail(provider: item?.value.flatMap(ProviderKind.init(rawValue:)))
     }
@@ -73,8 +87,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             window = w
         }
         focus.provider = provider
+        // 백그라운드 앱의 활성화 요청은 거절될 수 있다 → 활성화와 별개로 창은 항상 앞으로
+        NSApp.activate()
         window?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        window?.orderFrontRegardless()
         UsageModel.shared.refreshIfStale()
     }
 

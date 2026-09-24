@@ -8,6 +8,22 @@
     "%@": {
       "shouldTranslate": false
     },
+    "%@ 다시 로그인 필요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ needs to sign in again"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ の再ログインが必要"
+          }
+        }
+      }
+    },
     "%@ 다운로드 중…": {
       "localizations": {
         "en": {
@@ -36,6 +52,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ をインストール中…"
+          }
+        }
+      }
+    },
+    "%@ 실행 후 /login": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run %@, then /login"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ を実行して /login"
           }
         }
       }
@@ -490,6 +522,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ログイン時に起動"
+          }
+        }
+      }
+    },
+    "로그인이 풀렸습니다 — 아래 명령으로 Claude Code 를 열고 /login 하세요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed out — open Claude Code with the command below and run /login"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログインが解除されました — 下のコマンドで Claude Code を開いて /login してください"
           }
         }
       }

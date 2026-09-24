@@ -25,4 +25,6 @@ enum FetchOutcome: Sendable {
     /// 429
     case rateLimited(email: String?)
     case failed(String, email: String?, raw: Data?)
+    /// 이번엔 건너뜀 (화면이 꺼져 잠자기 직전 등) — 이전 값을 그대로 둔다
+    case skipped
 }

@@ -90,7 +90,10 @@ struct AccountCard: View {
                     if let plan = usage.plan { Text(plan).font(.caption).padding(.horizontal, 6).padding(.vertical, 1).background(.quaternary, in: Capsule()) }
                 }
                 statusLine
-                ForEach(usage.limits, id: \.name) { l in limitRow(l) }
+                // 만료·오류 상태의 한도 값은 지난 값이라 헷갈리므로 숨긴다
+                if usage.status == .ok || usage.status == .refreshing {
+                    ForEach(usage.limits, id: \.name) { l in limitRow(l) }
+                }
             }
         }
         .padding(10)
@@ -106,7 +109,8 @@ struct AccountCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Label(usage.error ?? String(localized: "토큰 만료"), systemImage: "key.slash").font(.caption).foregroundStyle(.orange)
                 HStack {
-                    Text(AccountCommand.command(for: usage)).font(.caption.monospaced()).textSelection(.enabled)
+                    // .textSelection 을 붙이면 macOS 27 에서 글자가 위아래로 뒤집혀 그려진다 → 복사 버튼만 둔다
+                    Text(AccountCommand.command(for: usage)).font(.caption.monospaced())
                     Button("복사") {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(AccountCommand.command(for: usage), forType: .string)
@@ -165,7 +169,7 @@ struct RawResponseView: View {
         VStack(alignment: .leading) {
             Text(sheet.title).font(.headline)
             ScrollView {
-                Text(sheet.text).font(.caption.monospaced()).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+                Text(sheet.text).font(.caption.monospaced()).frame(maxWidth: .infinity, alignment: .leading)
             }
             HStack {
                 Spacer()
