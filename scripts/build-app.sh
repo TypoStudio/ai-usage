@@ -48,6 +48,13 @@ ln -s /Applications "$STAGE/Applications"
 hdiutil create -volname "AI Usage" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null
 rm -rf "$STAGE"
 
+# 빌드 폴더 사본을 LaunchServices 에서 뺀다. 같은 번들 ID 의 더 높은 버전이 등록돼 있으면
+# 위젯 데몬(chronod)이 그 기록을 기준으로 삼아 설치본 위젯을 "Bundle version did not match" 로 못 그린다.
+LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+for copy in build/dd/Build/Products/*/AIUsage.app "$APP"; do
+  [ -d "$copy" ] && "$LSREGISTER" -u "$PWD/$copy" 2>/dev/null || true
+done
+
 if [ "${INSTALL:-0}" = "1" ]; then
   echo "▶ /Applications 설치"
   pkill -x AIUsage 2>/dev/null || true
@@ -55,7 +62,7 @@ if [ "${INSTALL:-0}" = "1" ]; then
   ditto "$APP" /Applications/AIUsage.app
   # 아이콘·이름 캐시 갱신 — 안 하면 이전 설치본의 빈 아이콘이 남는다
   touch /Applications/AIUsage.app
-  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f -R /Applications/AIUsage.app
+  "$LSREGISTER" -f -R /Applications/AIUsage.app
   open /Applications/AIUsage.app
 fi
 echo "✓ 완료"
