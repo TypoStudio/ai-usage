@@ -718,6 +718,22 @@
         }
       }
     },
+    "실행": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行"
+          }
+        }
+      }
+    },
     "아직 받은 응답이 없습니다.": {
       "localizations": {
         "en": {

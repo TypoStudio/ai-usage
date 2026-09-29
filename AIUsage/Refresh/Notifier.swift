@@ -1,5 +1,5 @@
 import AIUsageCore
-import Foundation
+import AppKit
 import UserNotifications
 
 /// 임계치를 **넘는 순간** 1회 알리고, 내려가면(리셋) 다시 무장한다. 상태는 재실행에도 유지된다.
@@ -70,5 +70,16 @@ enum AccountCommand {
     static func command(for u: AccountUsage) -> String {
         let dir = u.id.replacingOccurrences(of: FileManager.default.homeDirectoryForCurrentUser.path, with: "~")
         return u.provider == .claude ? "CLAUDE_CONFIG_DIR=\(dir) claude" : "CODEX_HOME=\(dir) codex login"
+    }
+
+    /// `.command` 파일을 여는 기본 터미널에서 명령을 실행한다. 로그인·대화형 셸이라 PATH 가 평소 터미널과 같다.
+    static func runInTerminal(for u: AccountUsage) {
+        let script = FileManager.default.temporaryDirectory.appendingPathComponent("aiusage-\(UUID().uuidString).command")
+        let body = "#!/bin/sh\nrm -f \"$0\"\nexec \"${SHELL:-/bin/zsh}\" -l -i -c '\(command(for: u))'\n"
+        do {
+            try body.write(to: script, atomically: true, encoding: .utf8)
+            try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: script.path)
+        } catch { return }
+        NSWorkspace.shared.open(script)
     }
 }

@@ -115,6 +115,7 @@ struct AccountCard: View {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(AccountCommand.command(for: usage), forType: .string)
                     }.controlSize(.mini)
+                    Button("실행") { AccountCommand.runInTerminal(for: usage) }.controlSize(.mini)
                 }
             }
         case .error:
