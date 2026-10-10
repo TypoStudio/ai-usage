@@ -15,12 +15,22 @@ enum HTTP {
         let (data, resp) = try await session.data(for: req)
         return (data, (resp as? HTTPURLResponse)?.statusCode ?? 0)
     }
+
+    static func post(_ url: String, json: [String: String], headers: [String: String] = [:]) async throws -> (Data, Int) {
+        var req = URLRequest(url: URL(string: url)!)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        headers.forEach { req.setValue($1, forHTTPHeaderField: $0) }
+        req.httpBody = try JSONSerialization.data(withJSONObject: json)
+        let (data, resp) = try await session.data(for: req)
+        return (data, (resp as? HTTPURLResponse)?.statusCode ?? 0)
+    }
 }
 
 /// 한 계정 조회의 결과.
 enum FetchOutcome: Sendable {
     case ok(ParsedUsage, email: String?, raw: Data)
-    /// 토큰 만료·인증 실패 — 사용자가 CLI 를 한 번 실행해야 한다
+    /// 토큰 만료·인증 실패 — 자동 갱신이 안 되는 상태라 사용자가 로그인해야 한다
     case expired(String, email: String?, raw: Data?)
     /// 429
     case rateLimited(email: String?)

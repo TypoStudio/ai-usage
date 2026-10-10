@@ -6,8 +6,6 @@ enum ClaudeFetcher {
         var token: String
         var expiresAt: Date
         var subscription: String?
-        /// 갱신 토큰이 남아 있는지. 없으면 `claude doctor` 로도 못 살리고 `/login` 이 필요하다.
-        var canRefresh: Bool
     }
 
     static func email(dir: String) -> String? {
@@ -16,6 +14,7 @@ enum ClaudeFetcher {
         return (o["oauthAccount"] as? [String: Any])?["emailAddress"] as? String
     }
 
+    /// Claude Code 의 자격 증명은 **읽기만** 한다 — 갱신은 `ClaudeOAuth`(앱 자체 토큰)로.
     /// 키체인은 `/usr/bin/security` 로 읽는다. Claude Code 가 만든 항목의 ACL 에 이미 들어 있어
     /// 앱을 다시 서명해도 매번 허용 창이 뜨지 않는다. 없으면 `.credentials.json` 폴백.
     static func readCredential(dir: String) async -> Credential? {
@@ -25,17 +24,10 @@ enum ClaudeFetcher {
         if data.isEmpty, let file = FileManager.default.contents(atPath: "\(dir)/.credentials.json") { data = file }
         guard let o = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let oauth = o["claudeAiOauth"] as? [String: Any],
-              let token = oauth["accessToken"] as? String else { return nil }
+              let token = oauth["accessToken"] as? String, !token.isEmpty else { return nil }
         let exp = (oauth["expiresAt"] as? NSNumber)?.doubleValue ?? 0
-        let refresh = oauth["refreshToken"] as? String ?? ""
         return Credential(token: token, expiresAt: Date(timeIntervalSince1970: exp / 1000),
-                          subscription: oauth["subscriptionType"] as? String, canRefresh: !refresh.isEmpty)
-    }
-
-    /// 만료된 토큰은 `claude doctor` 가 갱신해 준다 (OAuth 엔드포인트 직접 호출은 429).
-    /// 갱신 도중 끊으면 갱신 토큰이 교체된 채 저장되지 않아 로그인이 풀릴 수 있다 → 넉넉히 기다린다.
-    static func runDoctor(dir: String, claudePath: String) async {
-        _ = await Shell.run(claudePath, ["doctor"], env: ["CLAUDE_CONFIG_DIR": dir], timeout: 90, captureOutput: false)
+                          subscription: oauth["subscriptionType"] as? String)
     }
 
     static func version(claudePath: String?) async -> String {

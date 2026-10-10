@@ -39,8 +39,8 @@ enum Notifier {
                 active.insert(key)
                 if !fired.contains(key) {
                     if u.error == UsageModel.loginRequired {
-                        post(title: String(localized: "\(u.label) 다시 로그인 필요"),
-                             body: String(localized: "\(AccountCommand.command(for: u)) 실행 후 /login"))
+                        post(title: String(localized: "\(u.label) 로그인 필요"),
+                             body: String(localized: "AI Usage 창에서 ‘로그인’ 을 누르세요. 한 번 로그인하면 앱이 스스로 갱신합니다."))
                     } else {
                         post(title: String(localized: "\(u.label) 토큰 갱신 실패"),
                              body: String(localized: "터미널에서 한 번 실행해 주세요: \(AccountCommand.command(for: u))"))

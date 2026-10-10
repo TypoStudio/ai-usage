@@ -8,22 +8,6 @@
     "%@": {
       "shouldTranslate": false
     },
-    "%@ 다시 로그인 필요": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ needs to sign in again"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ の再ログインが必要"
-          }
-        }
-      }
-    },
     "%@ 다운로드 중…": {
       "localizations": {
         "en": {
@@ -40,6 +24,38 @@
         }
       }
     },
+    "%@ 로그인": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ にログイン"
+          }
+        }
+      }
+    },
+    "%@ 로그인 필요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ needs to sign in"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ のログインが必要"
+          }
+        }
+      }
+    },
     "%@ 설치 중…": {
       "localizations": {
         "en": {
@@ -52,22 +68,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ をインストール中…"
-          }
-        }
-      }
-    },
-    "%@ 실행 후 /login": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Run %@, then /login"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ を実行して /login"
           }
         }
       }
@@ -135,6 +135,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "AI Usage %@ をインストールできます。"
+          }
+        }
+      }
+    },
+    "AI Usage 창에서 ‘로그인’ 을 누르세요. 한 번 로그인하면 앱이 스스로 갱신합니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press “Sign in” in the AI Usage window. After one sign-in the app refreshes on its own."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI Usage ウィンドウで「ログイン」を押してください。一度ログインすればアプリが自動で更新します。"
           }
         }
       }
@@ -382,6 +398,22 @@
         }
       }
     },
+    "갱신 토큰이 무효화되었습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The refresh token was revoked"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リフレッシュトークンが無効になりました"
+          }
+        }
+      }
+    },
     "경로 추가…": {
       "localizations": {
         "en": {
@@ -526,18 +558,34 @@
         }
       }
     },
-    "로그인이 풀렸습니다 — 아래 명령으로 Claude Code 를 열고 /login 하세요": {
+    "로그인…": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Signed out — open Claude Code with the command below and run /login"
+            "value": "Sign in…"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ログインが解除されました — 下のコマンドで Claude Code を開いて /login してください"
+            "value": "ログイン…"
+          }
+        }
+      }
+    },
+    "로그인이 필요합니다 — ‘로그인’ 을 누르면 이후 앱이 스스로 갱신합니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign-in needed — press “Sign in” once and the app keeps the session alive from then on"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログインが必要です — 「ログイン」を押せば以後はアプリが自動で更新します"
           }
         }
       }
@@ -622,6 +670,38 @@
         }
       }
     },
+    "브라우저 열기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open browser"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザを開く"
+          }
+        }
+      }
+    },
+    "브라우저에서 이 계정(%@)으로 로그인하면 코드가 표시됩니다. 그 코드를 아래에 붙여 넣으세요. 한 번 로그인하면 앱이 스스로 토큰을 갱신합니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to this account (%@) in the browser and it will show a code. Paste that code below. After one sign-in the app refreshes the token on its own."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザでこのアカウント（%@）にログインするとコードが表示されます。そのコードを下に貼り付けてください。一度ログインすればアプリがトークンを自動で更新します。"
+          }
+        }
+      }
+    },
     "새 버전이 있습니다": {
       "localizations": {
         "en": {
@@ -650,6 +730,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "更新"
+          }
+        }
+      }
+    },
+    "서버 응답 %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server replied %lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバー応答 %lld"
+          }
+        }
+      }
+    },
+    "서버 응답 %lld: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server replied %lld: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバー応答 %lld: %@"
           }
         }
       }
@@ -778,6 +890,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "アプリを起動して"
+          }
+        }
+      }
+    },
+    "앱에서 로그인…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in from the app…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリでログイン…"
           }
         }
       }
@@ -974,22 +1102,6 @@
         }
       }
     },
-    "자격 증명 없음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No credentials"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "認証情報なし"
-          }
-        }
-      }
-    },
     "자동 탐색": {
       "localizations": {
         "en": {
@@ -1086,6 +1198,22 @@
         }
       }
     },
+    "취소": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャンセル"
+          }
+        }
+      }
+    },
     "켜진 계정이 없습니다. 설정에서 계정을 켜세요.": {
       "localizations": {
         "en": {
@@ -1102,6 +1230,38 @@
         }
       }
     },
+    "코드 붙여넣기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste code"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コードを貼り付け"
+          }
+        }
+      }
+    },
+    "코드 형식이 맞지 않습니다 — 브라우저에 표시된 코드를 그대로 붙여 넣으세요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That doesn't look like a code — paste exactly what the browser showed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コードの形式が正しくありません — ブラウザに表示されたコードをそのまま貼り付けてください"
+          }
+        }
+      }
+    },
     "크레딧 고갈 알림": {
       "localizations": {
         "en": {
@@ -1114,6 +1274,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "クレジット枯渇を通知"
+          }
+        }
+      }
+    },
+    "키체인 저장 실패 (%d)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save to the keychain (%d)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キーチェーンに保存できません (%d)"
           }
         }
       }
@@ -1150,6 +1326,22 @@
         }
       }
     },
+    "토큰 갱신 실패 — %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token refresh failed — %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン更新に失敗 — %@"
+          }
+        }
+      }
+    },
     "토큰 갱신 실패 알림": {
       "localizations": {
         "en": {
@@ -1182,34 +1374,18 @@
         }
       }
     },
-    "토큰 만료 — claude 실행 파일을 찾지 못함": {
+    "토큰 응답을 읽을 수 없습니다": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Token expired — claude executable not found"
+            "value": "Couldn't read the token response"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "トークン期限切れ — claude 実行ファイルが見つかりません"
-          }
-        }
-      }
-    },
-    "토큰 만료 — 자동 갱신 실패": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Token expired — auto-refresh failed"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "トークン期限切れ — 自動更新に失敗"
+            "value": "トークン応答を読み取れません"
           }
         }
       }

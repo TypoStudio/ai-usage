@@ -7,6 +7,7 @@ struct DetailView: View {
     @EnvironmentObject private var focus: DetailFocus
     @AppStorage(Prefs.threshold) private var threshold = 90.0
     @State private var rawSheet: RawSheet?
+    @State private var loginTarget: AccountConfig?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,6 +30,7 @@ struct DetailView: View {
         }
         .frame(minWidth: 600, minHeight: 360)
         .sheet(item: $rawSheet) { s in RawResponseView(sheet: s) }
+        .sheet(item: $loginTarget) { c in ClaudeLoginSheet(config: c) }
     }
 
     @ViewBuilder
@@ -40,8 +42,9 @@ struct DetailView: View {
                 Text("켜진 계정이 없습니다. 설정에서 계정을 켜세요.").foregroundStyle(.secondary).font(.callout)
             }
             ForEach(configs) { c in
-                AccountCard(usage: model.usage(for: c), threshold: threshold)
+                AccountCard(usage: model.usage(for: c), threshold: threshold, login: p == .claude ? { loginTarget = c } : nil)
                     .contextMenu {
+                        if p == .claude { Button("앱에서 로그인…") { loginTarget = c } }
                         Button("터미널 명령 복사") {
                             NSPasteboard.general.clearContents()
                             NSPasteboard.general.setString(AccountCommand.command(for: model.usage(for: c)), forType: .string)
@@ -75,6 +78,8 @@ struct DetailView: View {
 struct AccountCard: View {
     var usage: AccountUsage
     var threshold: Double
+    /// Claude 계정: 앱 자체 OAuth 로그인 시트를 연다
+    var login: (() -> Void)? = nil
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -109,6 +114,7 @@ struct AccountCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Label(usage.error ?? String(localized: "토큰 만료"), systemImage: "key.slash").font(.caption).foregroundStyle(.orange)
                 HStack {
+                    if let login { Button("로그인…", action: login).controlSize(.mini) }
                     // .textSelection 을 붙이면 macOS 27 에서 글자가 위아래로 뒤집혀 그려진다 → 복사 버튼만 둔다
                     Text(AccountCommand.command(for: usage)).font(.caption.monospaced())
                     Button("복사") {
@@ -183,5 +189,51 @@ struct RawResponseView: View {
         }
         .padding()
         .frame(width: 520, height: 480)
+    }
+}
+
+/// 브라우저에서 로그인 → 표시된 코드를 붙여 넣기 → 앱 전용 토큰 저장. 이후 갱신은 이 토큰으로만 한다.
+struct ClaudeLoginSheet: View {
+    var config: AccountConfig
+    @EnvironmentObject private var model: UsageModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var login = ClaudeOAuth.beginLogin()
+    @State private var code = ""
+    @State private var error: String?
+    @State private var busy = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("\(config.label) 로그인").font(.headline)
+            Text("브라우저에서 이 계정(\(ClaudeFetcher.email(dir: config.id) ?? config.id))으로 로그인하면 코드가 표시됩니다. 그 코드를 아래에 붙여 넣으세요. 한 번 로그인하면 앱이 스스로 토큰을 갱신합니다.")
+                .font(.callout).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            Button("브라우저 열기") { NSWorkspace.shared.open(login.url) }
+            TextField("코드 붙여넣기", text: $code).textFieldStyle(.roundedBorder).onSubmit(submit)
+            if let error { Text(error).font(.caption).foregroundStyle(.red).fixedSize(horizontal: false, vertical: true) }
+            HStack {
+                Spacer()
+                if busy { ProgressView().controlSize(.small) }
+                Button("취소") { dismiss() }
+                Button("확인", action: submit).keyboardShortcut(.defaultAction).disabled(code.isEmpty || busy)
+            }
+        }
+        .padding()
+        .frame(width: 440)
+    }
+
+    private func submit() {
+        guard !code.isEmpty, !busy else { return }
+        busy = true
+        error = nil
+        Task {
+            do {
+                _ = try await ClaudeOAuth.finishLogin(login, pasted: code, dir: config.id)
+                dismiss()
+                model.refresh()
+            } catch {
+                self.error = "\(error)"
+            }
+            busy = false
+        }
     }
 }

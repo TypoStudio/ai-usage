@@ -28,7 +28,7 @@ A macOS **desktop widget** that shows the usage limits of several **Claude Code*
 - 🧩 **Separate Claude Code and Codex widgets** — small (one account), medium (three accounts), and large (three accounts with numbers).
 - 🔴 **Alert colors** — a ring turns red past your threshold (default 90%). A dashed gray gauge means the token expired or the request failed.
 - 🔎 **Auto-discovery** — finds `~/.claude-*` and `~/.codex-*` config directories. Turn accounts on or off and reorder them in Settings.
-- 🔑 **Automatic token refresh** — expired Claude Code tokens are refreshed by running `claude doctor` for you.
+- 🔑 **Automatic token refresh** — sign in once per Claude account inside the app; it then keeps its own OAuth session alive (the way CLIProxyAPI does) and never touches Claude Code's credentials. Codex tokens are refreshed the same way the Codex CLI does.
 - 🔔 **Notifications** — once when a limit crosses the threshold, when Codex workspace credits run out, and when a token refresh fails.
 - 🪟 **Detail window** — every account with each limit, its percentage, time left, and the exact reset date and time.
 - ⬆️ **Automatic updates** — checks GitHub releases on launch and installs new versions in place.
@@ -133,7 +133,7 @@ If you like this app, you can support it with a cup of coffee ☕
 - 🧩 **Claude Code·Codex 위젯 따로** — small(계정 1개), medium(계정 3개), large(계정 3개 + 숫자).
 - 🔴 **경고 색** — 임계치(기본 90%)를 넘은 링은 빨갛게 바뀝니다. 회색 점선 게이지는 토큰 만료나 요청 실패입니다.
 - 🔎 **계정 자동 탐지** — `~/.claude-*`, `~/.codex-*` 설정 디렉토리를 찾습니다. 설정에서 켜고 끄고 순서를 바꿀 수 있습니다.
-- 🔑 **토큰 자동 갱신** — 만료된 Claude Code 토큰은 `claude doctor`를 대신 실행해 갱신합니다.
+- 🔑 **토큰 자동 갱신** — Claude 계정마다 앱에서 한 번 로그인하면 앱이 자기 OAuth 세션을 스스로 유지합니다(CLIProxyAPI 방식). Claude Code 의 자격 증명은 건드리지 않습니다. Codex 토큰은 codex CLI 와 같은 방식으로 갱신합니다.
 - 🔔 **알림** — 한도가 임계치를 넘을 때, Codex 워크스페이스 크레딧이 떨어질 때, 토큰 갱신이 실패할 때 한 번씩 알립니다.
 - 🪟 **상세 창** — 모든 계정의 한도별 퍼센트, 남은 시간, 정확한 리셋 일시.
 - ⬆️ **자동 업데이트** — 실행 시 GitHub 릴리즈를 확인하고 새 버전을 그 자리에서 설치합니다.
@@ -208,7 +208,7 @@ docs/PLAN.md             기획서
 ## 참고
 
 - 사용량 API는 공개 문서가 없어 바뀔 수 있습니다. 계정을 우클릭해 **응답 보기**로 원본 JSON을 볼 수 있습니다.
-- Codex 토큰은 자동 갱신하지 않습니다. 만료되면 한 번 실행할 명령을 앱이 보여 줍니다.
+- Codex 토큰은 401 을 받았을 때만 갱신해 `auth.json` 에 되씁니다. `~/.codex` 를 복사해 만든 디렉토리끼리는 갱신 토큰이 같아, 한쪽이 갱신하면 다른 쪽 로그인이 풀릴 수 있습니다.
 
 ## 후원
 

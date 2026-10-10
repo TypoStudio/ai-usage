@@ -17,7 +17,7 @@
 - 터미널을 열지 않고도 바탕화면에서 각 계정의 남은 한도를 즉시 확인한다.
 - 프로바이더별로 **따로 배치할 수 있는 위젯**을 제공한다 (Claude만, Codex만, 둘 다).
 - 계정(환경) 추가·삭제·순서 변경을 앱 안에서 처리한다. 스크립트처럼 배열을 손으로 고치지 않는다.
-- 만료된 토큰은 사용자가 손대지 않아도 갱신한다 (Claude: `claude doctor` 방식 재사용).
+- 만료된 토큰은 사용자가 손대지 않아도 갱신한다 (Claude: 앱 자체 OAuth 세션, CLIProxyAPI 방식).
 - 한도가 임계치를 넘으면 알린다 (예: 주간 90%, 크레딧 고갈).
 
 ## 2. "위젯"의 해석 — 두 가지 후보와 선택
@@ -33,7 +33,7 @@
 
 **결정(v0.2): B(바탕화면 위젯)로 간다.** 표의 제약은 역할 분리로 푼다.
 
-- **앱**이 키체인 읽기·`claude doctor`·API 호출을 모두 맡고, 결과를 App Group 컨테이너의 `snapshot.json`에 쓴 뒤
+- **앱**이 키체인 읽기·토큰 갱신·API 호출을 모두 맡고, 결과를 App Group 컨테이너의 `snapshot.json`에 쓴 뒤
   `WidgetCenter.shared.reloadAllTimelines()`를 호출한다.
 - **위젯 익스텐션**은 그 파일을 읽어 링 게이지를 그리기만 한다. 네트워크·키체인·서브프로세스에 손대지 않는다.
 - 앱은 창을 닫아도 백그라운드에서 계속 돌며 갱신한다(로그인 시 실행 옵션). 위젯을 클릭하면 앱의 상세 창이 열린다.
@@ -66,8 +66,13 @@
   헤더 `Authorization: Bearer <token>`, `anthropic-beta: oauth-2025-04-20`, `User-Agent: claude-code/<version>`.
   응답 `.limits[]` → `kind`, `scope.model.display_name`(선택), `percent`, `resets_at`(ISO), `severity`.
   **[구현]** `kind` 는 `session` / `weekly_all` / `weekly_scoped`(모델별). `resets_at` 은 마이크로초 6자리라 밀리초로 잘라 파싱.
-- **토큰 갱신**: `expiresAt < now` 이면 `CLAUDE_CONFIG_DIR=<dir> claude doctor` 를 stdin 닫고 30초 타임아웃으로 실행 → 키체인 다시 읽기.
-  OAuth 토큰 엔드포인트 직접 호출은 curl 기준 429가 반환되어 채택하지 않는다.
+- **토큰 갱신** (0.1.5~, CLIProxyAPI 방식): Claude Code 의 자격 증명은 **읽기만** 한다. 앱은 계정마다 자체 OAuth 로그인
+  (PKCE, `client_id` 는 Claude Code 와 같음, `redirect_uri=https://platform.claude.com/oauth/code/callback` → 브라우저가 보여 준
+  `코드#state` 를 붙여 넣기)으로 **자기 갱신 토큰 체인**을 갖고, 앱 전용 키체인 항목(`AI Usage-claude-oauth`, 계정 = 디렉토리)에 저장한다.
+  갱신은 `POST https://platform.claude.com/v1/oauth/token` (`grant_type=refresh_token`, JSON) 으로 만료 5분 전에 미리.
+  (`console.anthropic.com/v1/oauth/token` 은 429 — 예전에 "직접 호출은 429" 라고 적은 이유.)
+  실패해도 토큰을 지우지 않는다. 429 는 백오프, `invalid_grant` 만 재로그인 안내. 앱 로그인이 없는 계정은 Claude Code 토큰이
+  살아 있는 동안만 보여 주고, 만료되면 카드에 `로그인…` 버튼을 띄운다. `claude doctor` 는 더 쓰지 않는다 (§6 사고 기록).
 - `claude` 실행 파일 위치: `PATH` 탐색 + `~/.local/share/claude/versions/*` 폴백. 설정에서 수동 지정 가능.
 
 ### 4.2 Codex
@@ -78,8 +83,9 @@
   응답 `.plan_type`, `.rate_limit_reached_type.type`(예: `workspace_owner_credits_depleted`),
   `.rate_limit.{primary_window,secondary_window}` → `limit_window_seconds`(18000=5h, 604800=7d), `used_percent`, `reset_at`(epoch), `reset_after_seconds`.
   **[구현]** 팀 플랜은 `primary_window` 가 7d 이고 `secondary_window` 는 null 이다. 그래서 링은 순서가 아니라 창 길이로 정한다.
-- **토큰 갱신**: 1차 범위에서는 자동 갱신 없음. 401/403이면 카드에 `cdxN 한 번 실행` 안내.
-  (`refresh_token`이 있으므로 갱신 가능성은 있으나 엔드포인트·클라이언트 ID 검증 후 2차에서 검토.)
+- **토큰 갱신** (0.1.5~): 401/403 이면 codex CLI 와 같은 요청(`POST https://auth.openai.com/oauth/token`, JSON,
+  `client_id=app_EMoamEEZ73f0CkXaXp7hrann`, `scope=openid profile email`)으로 갱신해 `auth.json` 의 `tokens.*`·`last_refresh` 만 되쓰고(0600 유지) 한 번 재시도.
+  미리 갱신은 하지 않는다 — 돌고 있는 codex 와 갱신 토큰을 두고 경쟁하지 않도록.
 - 같은 Team 워크스페이스에 속한 계정은 `account_id`가 같다 → 크레딧 고갈 경고는 워크스페이스 단위로 한 번만 묶어 표시.
 
 ### 4.3 공통 모델
@@ -155,14 +161,13 @@ Apple Watch 활동 링과 같은 모양. **게이지 하나 = 계정 하나**, �
   리로드 예산을 아끼면서도, 앱이 살아 있는데 위젯이 `앱 실행 필요` 로 바뀌지 않게 하기 위해서다.
 - 서브프로세스는 타임아웃 시 SIGTERM, 3초 뒤 SIGKILL. 출력은 파이프가 아닌 임시 파일로 받아 손자 프로세스 때문에 멈추지 않게 한다.
 - 계정별 병렬 요청, 계정당 15초 타임아웃. 한 계정 실패가 다른 계정을 막지 않는다.
-- 토큰 갱신(`claude doctor`)은 **모든 계정을 통틀어 한 번에 하나씩**, 계정당 10분에 1회까지. 타임아웃 90초.
-- **[사고 2026-09-24]** 새벽 다크웨이크(화면 꺼진 채 41초 깨어남) 중에 cld2·cld3 의 `claude doctor` 가 동시에 돌다가
-  잠자기로 끊겼고, 1초 뒤 두 계정의 키체인 자격 증명이 같은 초에 비워졌다(`expiresAt: 0`, `refreshToken` 없음).
-  갱신 토큰이 교체된 뒤 저장되지 못한 것으로 추정. 대책:
-  - 화면이 꺼져 있거나 잠자기 중이면 갱신 자체를 하지 않는다(`screensDidSleep`/`willSleep` → 멈춤, `screensDidWake`/`didWake` → 즉시 갱신).
-  - doctor 차례가 왔을 때 화면이 꺼졌으면 건너뛴다.
-  - 갱신 토큰이 없으면 doctor 를 돌리지 않고 `다시 로그인 필요`(명령 + `/login` 안내)를 보여 준다.
-  - 만료 전 미리 갱신은 doctor 실행 횟수만 늘려 같은 위험을 키우므로 넣지 않는다.
+- 화면이 꺼져 있거나 잠자기 중이면 갱신 자체를 하지 않는다(`screensDidSleep`/`willSleep` → 멈춤, `screensDidWake`/`didWake` → 즉시 갱신).
+  갱신 도중 끊기면 서버는 갱신 토큰을 교체했는데 우리는 저장을 못 해 다음 갱신이 `invalid_grant` 가 된다.
+- **[사고 2026-09-24, 2026-10-10]** 0.1.4 까지는 만료된 Claude 토큰을 `claude doctor` 로 갱신했다. Claude Code 의 갱신 토큰은
+  1회용이라 doctor 와 다른 Claude Code 프로세스가 같은 토큰으로 갱신하면 지는 쪽이 `invalid_grant` 를 받고, Claude Code 는 그때
+  키체인 자격 증명을 비운다(`accessToken: ""`, `expiresAt: 0`; 바이너리 문자열 `tengu_oauth_refresh_token_marked_dead_invalid_grant`).
+  10-10 cld2: `.oauth_refresh.lock.owner` 의 pid 시작 17:05:59 → 키체인 수정 17:06:03 — 앱이 띄운 doctor 가 비웠다.
+  CLIProxyAPI 가 로그인을 유지하는 이유는 자기 토큰 체인을 따로 갖고 실패해도 지우지 않기 때문 → 같은 방식으로 바꿨다 (§4.1).
 - 알림(UNUserNotification): 임계치 **넘는 순간** 1회, 리셋 후 다시 무장. 크레딧 고갈 플래그도 동일.
 
 ## 7. 기술 스택·저장소 구조
@@ -210,8 +215,8 @@ ai-usage/
 | 위젯 리로드 예산 | `reloadAllTimelines()`를 너무 자주 부르면 시스템이 무시할 수 있다 | 값 변경 시에만 호출, 최소 간격 1분. 위젯에 `갱신 hh:mm` 표기로 지연을 드러냄 |
 | 앱이 안 떠 있음 | 위젯은 스스로 데이터를 못 가져오므로 앱이 죽으면 값이 멈춘다 | 로그인 시 실행 기본 on, 10분 이상 오래된 스냅샷은 위젯에 `앱 실행 필요` 배지 + 클릭 시 앱 실행 |
 | 비공식 API | `/api/oauth/usage`, `/backend-api/wham/usage` 모두 문서화되지 않음 | 파싱 실패 시 카드에 원본 오류 노출, `--raw`에 해당하는 "응답 보기" 메뉴 |
-| `claude doctor` 부작용 | 실행 시간·출력 형식이 버전마다 달라질 수 있음 | 타임아웃 30초, 결과 판정은 키체인 `expiresAt` 재확인으로만 |
-| Codex 토큰 만료 | 자동 갱신 미지원 | 명령 안내 + 클립보드 복사. 2차에서 리프레시 엔드포인트 검토 |
+| OAuth 갱신 경쟁 | Claude Code 와 같은 갱신 토큰을 쓰면 지는 쪽이 `invalid_grant`, Claude Code 는 자격 증명을 비움 | **[구현] 해소** — 앱 자체 OAuth 세션(§4.1), Claude Code 키체인은 읽기만 |
+| Codex 토큰 만료 | codex CLI 와 `auth.json` 을 공유 | 401 때만 갱신해 되쓴다. `~/.codex` 를 복사해 만든 디렉토리끼리는 갱신 토큰이 같아 한쪽이 갱신하면 다른 쪽이 풀릴 수 있음 |
 | 요청 빈도 | 사용량 API에 레이트 리밋이 있을 수 있음 | 기본 2분, 429 수신 시 지수 백오프(최대 30분) |
 
 ## 9. 로드맵

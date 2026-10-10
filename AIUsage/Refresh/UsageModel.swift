@@ -18,11 +18,8 @@ final class UsageModel: ObservableObject {
     private var timer: Timer?
     /// 429 백오프: 계정별 다음 허용 시각과 현재 지연
     private var backoff: [String: (until: Date, delay: TimeInterval)] = [:]
-    private var lastDoctor: [String: Date] = [:]
-    /// `claude doctor` 는 계정이 여러 개라도 한 번에 하나씩만 돌린다
-    private var doctorChain: Task<Void, Never>?
     /// 화면이 꺼져 있거나 잠자기 중이면 갱신하지 않는다. 다크웨이크(화면 꺼진 채 잠깐 깨는 것) 중에
-    /// 토큰 갱신이 돌다가 잠자기로 끊기면 로그인이 풀린다 (2026-09-24 cld2·cld3 사례).
+    /// 토큰 갱신이 돌다가 잠자기로 끊기면 서버는 갱신 토큰을 교체했는데 우리는 저장을 못 해 로그인이 풀린다.
     private var screensAsleep = false
     private var lastWidgetReload = Date.distantPast
     private var lastWidgetPayload: Data?
@@ -155,47 +152,49 @@ final class UsageModel: ObservableObject {
 
     private func fetchClaude(_ config: AccountConfig) async -> FetchOutcome {
         let email = ClaudeFetcher.email(dir: config.id)
-        guard var cred = await ClaudeFetcher.readCredential(dir: config.id) else {
-            return .failed(String(localized: "자격 증명 없음"), email: email, raw: nil)
+        let version = claudeVersion ?? "2.0.0"
+        let cred = await ClaudeFetcher.readCredential(dir: config.id)
+        // 1) 앱 자체 로그인이 있으면 그 토큰으로 — 만료 5분 전에 미리 갱신하고, 401 이면 한 번 갱신해 다시 시도
+        if var token = await ClaudeOAuth.load(dir: config.id) {
+            var refreshed = false
+            if token.needsRefresh {
+                var u = usage(for: config); u.status = .refreshing; usages[config.id] = u
+                switch await refreshAppToken(token, dir: config.id, email: email) {
+                case let .success(t): token = t; refreshed = true
+                case let .failure(f): return f.outcome
+                }
+            }
+            let outcome = await ClaudeFetcher.fetch(token: token.accessToken, subscription: cred?.subscription,
+                                                    email: token.email ?? email, version: version)
+            guard case .expired = outcome, !refreshed else { return outcome }
+            switch await refreshAppToken(token, dir: config.id, email: email) {
+            case let .success(t):
+                return await ClaudeFetcher.fetch(token: t.accessToken, subscription: cred?.subscription,
+                                                 email: t.email ?? email, version: version)
+            case let .failure(f): return f.outcome
+            }
         }
-        if cred.expiresAt < Date() {
-            // 갱신 토큰이 없으면 doctor 로도 못 살린다 — 괜히 돌리지 않는다
-            guard cred.canRefresh else { return .expired(Self.loginRequired, email: email, raw: nil) }
-            // claude doctor 는 계정당 10분에 1회까지
-            if let last = lastDoctor[config.id], Date().timeIntervalSince(last) < 600 {
-                return .expired(String(localized: "토큰 만료 — 자동 갱신 실패"), email: email, raw: nil)
-            }
-            guard let claude = Shell.locate("claude", override: UserDefaults.standard.string(forKey: Prefs.claudePath)) else {
-                return .expired(String(localized: "토큰 만료 — claude 실행 파일을 찾지 못함"), email: email, raw: nil)
-            }
-            var u = usage(for: config); u.status = .refreshing; usages[config.id] = u
-            guard await runDoctorSerially(dir: config.id, claudePath: claude) else { return .skipped }
-            guard let fresh = await ClaudeFetcher.readCredential(dir: config.id), fresh.canRefresh else {
-                return .expired(Self.loginRequired, email: email, raw: nil)
-            }
-            guard fresh.expiresAt > Date() else {
-                return .expired(String(localized: "토큰 만료 — 자동 갱신 실패"), email: email, raw: nil)
-            }
-            cred = fresh
-        }
-        return await ClaudeFetcher.fetch(token: cred.token, subscription: cred.subscription, email: email,
-                                         version: claudeVersion ?? "2.0.0")
+        // 2) 없으면 Claude Code 의 자격 증명을 읽기만 한다. 만료됐으면 앱에서 로그인하라고 안내한다 —
+        //    여기서 `claude doctor` 로 갱신하면 Claude Code 와 갱신 토큰을 두고 경쟁해 로그인이 풀린다.
+        guard let cred, cred.expiresAt > Date() else { return .expired(Self.loginRequired, email: email, raw: nil) }
+        return await ClaudeFetcher.fetch(token: cred.token, subscription: cred.subscription, email: email, version: version)
     }
 
-    static let loginRequired = String(localized: "로그인이 풀렸습니다 — 아래 명령으로 Claude Code 를 열고 /login 하세요")
+    static let loginRequired = String(localized: "로그인이 필요합니다 — ‘로그인’ 을 누르면 이후 앱이 스스로 갱신합니다")
 
-    /// 앞선 doctor 가 끝난 뒤에 실행한다. 차례가 왔을 때 화면이 꺼졌으면 건너뛰고 false.
-    private func runDoctorSerially(dir: String, claudePath: String) async -> Bool {
-        let previous = doctorChain
-        let mine = Task { @MainActor [weak self] () -> Bool in
-            await previous?.value
-            guard let self, !self.screensAsleep else { return false }
-            self.lastDoctor[dir] = Date()
-            await ClaudeFetcher.runDoctor(dir: dir, claudePath: claudePath)
-            return true
+    private struct RefreshFailure: Error { var outcome: FetchOutcome }
+
+    /// 갱신 실패 시 토큰은 지우지 않는다. 429 는 백오프, invalid_grant 만 재로그인.
+    private func refreshAppToken(_ token: ClaudeOAuth.Token, dir: String, email: String?) async -> Result<ClaudeOAuth.Token, RefreshFailure> {
+        do {
+            return .success(try await ClaudeOAuth.refresh(token, dir: dir))
+        } catch ClaudeOAuth.Failure.invalidGrant {
+            return .failure(RefreshFailure(outcome: .expired(Self.loginRequired, email: email, raw: nil)))
+        } catch ClaudeOAuth.Failure.http(429, _) {
+            return .failure(RefreshFailure(outcome: .rateLimited(email: email)))
+        } catch {
+            return .failure(RefreshFailure(outcome: .failed(String(localized: "토큰 갱신 실패 — \(String(describing: error))"), email: email, raw: nil)))
         }
-        doctorChain = Task { _ = await mine.value }
-        return await mine.value
     }
 
     private func apply(_ outcome: FetchOutcome, to config: AccountConfig) {

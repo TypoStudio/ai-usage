@@ -11,9 +11,9 @@ enum Shell {
 
     struct Result: Sendable { var status: Int32; var stdout: Data; var timedOut: Bool }
 
-    /// stdin 은 닫고, `timeout` 초가 지나면 SIGTERM → 3초 뒤 SIGKILL.
+    /// `input` 이 있으면 stdin 으로 넣고 닫는다 (없으면 닫기만). `timeout` 초가 지나면 SIGTERM → 3초 뒤 SIGKILL.
     /// stdout 은 파이프 대신 임시 파일로 받는다 — 자식이 띄운 손자 프로세스가 출력을 물고 있어도 막히지 않는다.
-    static func run(_ executable: String, _ args: [String], env extra: [String: String] = [:],
+    static func run(_ executable: String, _ args: [String], env extra: [String: String] = [:], input: Data? = nil,
                     timeout: TimeInterval, captureOutput: Bool = true) async -> Result {
         await withCheckedContinuation { cont in
             let once = ResumeOnce(cont)
@@ -29,7 +29,8 @@ enum Shell {
             let outHandle = captureOutput ? (try? FileHandle(forWritingTo: outURL)) : nil
             p.standardOutput = outHandle ?? FileHandle.nullDevice
             p.standardError = FileHandle.nullDevice
-            p.standardInput = FileHandle.nullDevice
+            let inPipe = Pipe()
+            if input == nil { p.standardInput = FileHandle.nullDevice } else { p.standardInput = inPipe }
 
             @Sendable func finish(status: Int32, timedOut: Bool) {
                 try? outHandle?.close()
@@ -41,6 +42,10 @@ enum Shell {
             do { try p.run() } catch {
                 finish(status: -1, timedOut: false)
                 return
+            }
+            if let input {
+                inPipe.fileHandleForWriting.write(input)
+                try? inPipe.fileHandleForWriting.close()
             }
             let pid = p.processIdentifier
             DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
