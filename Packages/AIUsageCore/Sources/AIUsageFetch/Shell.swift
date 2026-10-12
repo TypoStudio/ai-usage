@@ -1,19 +1,19 @@
 import Foundation
 
 /// 서브프로세스 실행. Finder 에서 띄운 앱은 PATH 가 짧으므로 흔한 위치를 붙여 준다.
-enum Shell {
-    static let home = FileManager.default.homeDirectoryForCurrentUser.path
+public enum Shell {
+    public static let home = FileManager.default.homeDirectoryForCurrentUser.path
 
-    static var path: String {
+    public static var path: String {
         ["\(home)/.local/bin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"]
             .joined(separator: ":")
     }
 
-    struct Result: Sendable { var status: Int32; var stdout: Data; var timedOut: Bool }
+    public struct Result: Sendable { public var status: Int32; public var stdout: Data; public var timedOut: Bool }
 
     /// `input` 이 있으면 stdin 으로 넣고 닫는다 (없으면 닫기만). `timeout` 초가 지나면 SIGTERM → 3초 뒤 SIGKILL.
     /// stdout 은 파이프 대신 임시 파일로 받는다 — 자식이 띄운 손자 프로세스가 출력을 물고 있어도 막히지 않는다.
-    static func run(_ executable: String, _ args: [String], env extra: [String: String] = [:], input: Data? = nil,
+    public static func run(_ executable: String, _ args: [String], env extra: [String: String] = [:], input: Data? = nil,
                     timeout: TimeInterval, captureOutput: Bool = true) async -> Result {
         await withCheckedContinuation { cont in
             let once = ResumeOnce(cont)
@@ -60,7 +60,7 @@ enum Shell {
     }
 
     /// 사용자가 지정한 경로 → PATH 후보 → `~/.local/share/claude/versions/*` 최신
-    static func locate(_ name: String, override: String?) -> String? {
+    public static func locate(_ name: String, override: String?) -> String? {
         let fm = FileManager.default
         if let o = override?.trimmingCharacters(in: .whitespaces), !o.isEmpty {
             let expanded = (o as NSString).expandingTildeInPath

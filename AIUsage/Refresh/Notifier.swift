@@ -1,4 +1,5 @@
 import AIUsageCore
+import AIUsageFetch
 import AppKit
 import UserNotifications
 
@@ -38,7 +39,7 @@ enum Notifier {
                 let key = "expired|\(u.id)"
                 active.insert(key)
                 if !fired.contains(key) {
-                    if u.error == UsageModel.loginRequired {
+                    if u.error == AccountFetcher.loginRequired {
                         post(title: String(localized: "\(u.label) 로그인 필요"),
                              body: String(localized: "AI Usage 창에서 ‘로그인’ 을 누르세요. 한 번 로그인하면 앱이 스스로 갱신합니다."))
                     } else {

@@ -29,6 +29,8 @@ targets:
       - Shared
     dependencies:
       - package: AIUsageCore
+      - package: AIUsageCore
+        product: AIUsageFetch
       - target: AIUsageWidget
         embed: true
         codeSign: true

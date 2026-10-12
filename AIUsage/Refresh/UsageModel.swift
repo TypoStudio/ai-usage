@@ -1,4 +1,5 @@
 import AIUsageCore
+import AIUsageFetch
 import AppKit
 import Foundation
 import WidgetKit
@@ -131,70 +132,18 @@ final class UsageModel: ObservableObject {
     }
 
     private func resolveVersions() async {
+        guard claudeVersion == nil || codexVersion == nil else { return }
         let d = UserDefaults.standard
-        if claudeVersion == nil {
-            claudeVersion = await ClaudeFetcher.version(claudePath: Shell.locate("claude", override: d.string(forKey: Prefs.claudePath)))
-        }
-        if codexVersion == nil {
-            codexVersion = await CodexFetcher.version(codexPath: Shell.locate("codex", override: d.string(forKey: Prefs.codexPath)))
-        }
+        let v = await AccountFetcher.versions(claudePath: d.string(forKey: Prefs.claudePath), codexPath: d.string(forKey: Prefs.codexPath))
+        claudeVersion = v.claude
+        codexVersion = v.codex
     }
 
     private func refreshAccount(_ config: AccountConfig) async {
         if let b = backoff[config.id], b.until > Date() { return }
-        let outcome: FetchOutcome
-        switch config.provider {
-        case .claude: outcome = await fetchClaude(config)
-        case .codex: outcome = await CodexFetcher.fetch(dir: config.id, version: codexVersion ?? "0.100.0")
-        }
+        let outcome = await AccountFetcher.fetch(provider: config.provider, dir: config.id,
+                                                 claudeVersion: claudeVersion ?? "2.0.0", codexVersion: codexVersion ?? "0.100.0")
         apply(outcome, to: config)
-    }
-
-    private func fetchClaude(_ config: AccountConfig) async -> FetchOutcome {
-        let email = ClaudeFetcher.email(dir: config.id)
-        let version = claudeVersion ?? "2.0.0"
-        let cred = await ClaudeFetcher.readCredential(dir: config.id)
-        // 1) 앱 자체 로그인이 있으면 그 토큰으로 — 만료 5분 전에 미리 갱신하고, 401 이면 한 번 갱신해 다시 시도
-        if var token = await ClaudeOAuth.load(dir: config.id) {
-            var refreshed = false
-            if token.needsRefresh {
-                var u = usage(for: config); u.status = .refreshing; usages[config.id] = u
-                switch await refreshAppToken(token, dir: config.id, email: email) {
-                case let .success(t): token = t; refreshed = true
-                case let .failure(f): return f.outcome
-                }
-            }
-            let outcome = await ClaudeFetcher.fetch(token: token.accessToken, subscription: cred?.subscription,
-                                                    email: token.email ?? email, version: version)
-            guard case .expired = outcome, !refreshed else { return outcome }
-            switch await refreshAppToken(token, dir: config.id, email: email) {
-            case let .success(t):
-                return await ClaudeFetcher.fetch(token: t.accessToken, subscription: cred?.subscription,
-                                                 email: t.email ?? email, version: version)
-            case let .failure(f): return f.outcome
-            }
-        }
-        // 2) 없으면 Claude Code 의 자격 증명을 읽기만 한다. 만료됐으면 앱에서 로그인하라고 안내한다 —
-        //    여기서 `claude doctor` 로 갱신하면 Claude Code 와 갱신 토큰을 두고 경쟁해 로그인이 풀린다.
-        guard let cred, cred.expiresAt > Date() else { return .expired(Self.loginRequired, email: email, raw: nil) }
-        return await ClaudeFetcher.fetch(token: cred.token, subscription: cred.subscription, email: email, version: version)
-    }
-
-    static let loginRequired = String(localized: "로그인이 필요합니다 — ‘로그인’ 을 누르면 이후 앱이 스스로 갱신합니다")
-
-    private struct RefreshFailure: Error { var outcome: FetchOutcome }
-
-    /// 갱신 실패 시 토큰은 지우지 않는다. 429 는 백오프, invalid_grant 만 재로그인.
-    private func refreshAppToken(_ token: ClaudeOAuth.Token, dir: String, email: String?) async -> Result<ClaudeOAuth.Token, RefreshFailure> {
-        do {
-            return .success(try await ClaudeOAuth.refresh(token, dir: dir))
-        } catch ClaudeOAuth.Failure.invalidGrant {
-            return .failure(RefreshFailure(outcome: .expired(Self.loginRequired, email: email, raw: nil)))
-        } catch ClaudeOAuth.Failure.http(429, _) {
-            return .failure(RefreshFailure(outcome: .rateLimited(email: email)))
-        } catch {
-            return .failure(RefreshFailure(outcome: .failed(String(localized: "토큰 갱신 실패 — \(String(describing: error))"), email: email, raw: nil)))
-        }
     }
 
     private func apply(_ outcome: FetchOutcome, to config: AccountConfig) {

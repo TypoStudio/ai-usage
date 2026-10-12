@@ -64,6 +64,24 @@ Grab `AIUsage-x.y.z.dmg` from the [**latest release**](https://github.com/TypoSt
 
 Keep the app running. It launches at login by default. The widget only shows what the app writes, so if the app quits, the widget shows **Open the app**.
 
+### CLI and MCP (no app needed)
+
+The app bundles an `aiusage` command that fetches the same numbers with the same logic, so scripts and agents can read usage without the app running. `INSTALL=1 scripts/build-app.sh` links it to `~/.local/bin/aiusage`; otherwise call `/Applications/AIUsage.app/Contents/Helpers/aiusage`.
+
+```
+aiusage            # every enabled account as JSON (same shape as snapshot.json)
+aiusage claude     # one provider only (claude | codex)
+aiusage mcp        # MCP server over stdio, one tool: get_usage { provider? }
+```
+
+MCP config, e.g. for Claude Code (`claude mcp add aiusage -- aiusage mcp`) or any client:
+
+```json
+{ "mcpServers": { "aiusage": { "command": "/Applications/AIUsage.app/Contents/Helpers/aiusage", "args": ["mcp"] } } }
+```
+
+Token refresh is shared with the app through a file lock, so running both at once is safe.
+
 ## How it works
 
 - The app reads each account's credentials locally and calls the same usage endpoints the CLIs use: `api.anthropic.com/api/oauth/usage` for Claude Code, `chatgpt.com/backend-api/wham/usage` for Codex.
@@ -169,6 +187,24 @@ xattr -dr com.apple.quarantine /Applications/AIUsage.app
 
 앱은 계속 켜 두세요. 로그인 시 실행이 기본으로 켜져 있습니다. 위젯은 앱이 쓴 값을 보여 줄 뿐이라, 앱이 꺼지면 위젯에 **앱 실행 필요**가 뜹니다.
 
+### CLI · MCP (앱 없이 조회)
+
+앱 번들에 `aiusage` 명령이 들어 있습니다. 앱과 같은 로직으로 같은 값을 가져오므로, 앱이 떠 있지 않아도 스크립트나 에이전트가 사용량을 읽을 수 있습니다. `INSTALL=1 scripts/build-app.sh` 는 `~/.local/bin/aiusage` 로 링크해 주고, 아니면 `/Applications/AIUsage.app/Contents/Helpers/aiusage` 를 직접 부르면 됩니다.
+
+```
+aiusage            # 켜진 계정 전체를 JSON 으로 (snapshot.json 과 같은 형식)
+aiusage claude     # 한 프로바이더만 (claude | codex)
+aiusage mcp        # MCP 서버(stdio). 도구 get_usage { provider? } 하나
+```
+
+MCP 설정 예 — Claude Code 는 `claude mcp add aiusage -- aiusage mcp`, 그 밖의 클라이언트는:
+
+```json
+{ "mcpServers": { "aiusage": { "command": "/Applications/AIUsage.app/Contents/Helpers/aiusage", "args": ["mcp"] } } }
+```
+
+토큰 갱신은 앱과 파일 잠금으로 조율하므로 둘을 동시에 써도 안전합니다.
+
 ## 동작 원리
 
 - 앱이 각 계정의 자격 증명을 로컬에서 읽어 CLI와 같은 사용량 API를 부릅니다. Claude Code는 `api.anthropic.com/api/oauth/usage`, Codex는 `chatgpt.com/backend-api/wham/usage`입니다.
@@ -196,7 +232,8 @@ INSTALL=1 ./scripts/build-app.sh      # 테스트, 빌드, dmg 생성, /Applicat
 ## 프로젝트 구조
 
 ```
-AIUsage/                 앱: 갱신, 토큰 갱신, 알림, 상세 창, 설정, 업데이트
+AIUsage/                 앱: 갱신, 알림, 상세 창, 설정, 업데이트
+Packages/AIUsageCore/    AIUsageCore(모델·파서·위젯 공용), AIUsageFetch(자격 증명·토큰 갱신·조회), aiusage(CLI·MCP)
 AIUsageWidget/           위젯 익스텐션: 스냅샷을 읽어 링을 그림
 Packages/AIUsageCore/    공용 모델, 응답 파서, 링 뷰, 테스트
 Shared/                  문자열 카탈로그(ko/en/ja), 링크 이미지

@@ -37,7 +37,22 @@ xcodebuild -project AIUsage.xcodeproj -scheme AIUsage -configuration Release \
 APP="build/AIUsage.app"
 rm -rf "$APP"
 ditto build/dd/Build/Products/Release/AIUsage.app "$APP"
+
+# `aiusage` CLI(SwiftPM 실행 타깃)를 Contents/Helpers 에 넣고 앱을 다시 봉인한다.
+# MacOS/ 에 두면 대소문자를 안 가리는 파일 시스템에서 실행 파일 AIUsage 를 덮어쓴다.
+# Xcode 로 embed 하면 서명이 깨지고(--preserve-metadata 는 entitlements 를 잃는다), 그래서 entitlements 를 꺼내 명시한다.
+echo "▶ aiusage CLI..."
+(cd Packages/AIUsageCore && swift build -c release --product aiusage -q)
+CLI_BIN="$(cd Packages/AIUsageCore && swift build -c release --product aiusage --show-bin-path)/aiusage"
+ENTITLEMENTS="$(mktemp -t aiusage-ent).plist"
+codesign -d --entitlements - --xml "$APP" > "$ENTITLEMENTS"
+mkdir -p "$APP/Contents/Helpers"
+ditto "$CLI_BIN" "$APP/Contents/Helpers/aiusage"
+codesign -f -s "$SIGN_IDENTITY" -i com.typostudio.aiusage.cli "$APP/Contents/Helpers/aiusage"
+codesign -f -s "$SIGN_IDENTITY" --entitlements "$ENTITLEMENTS" "$APP"
+rm -f "$ENTITLEMENTS"
 codesign --verify --deep --strict "$APP"
+codesign -d --entitlements - --xml "$APP" | grep -q application-groups || { echo "entitlements 가 사라졌습니다" >&2; exit 1; }
 
 DMG="build/AIUsage-${VERSION}.dmg"
 echo "▶ dmg: $DMG"
@@ -63,6 +78,7 @@ if [ "${INSTALL:-0}" = "1" ]; then
   # 아이콘·이름 캐시 갱신 — 안 하면 이전 설치본의 빈 아이콘이 남는다
   touch /Applications/AIUsage.app
   "$LSREGISTER" -f -R /Applications/AIUsage.app
+  mkdir -p ~/.local/bin && ln -sf /Applications/AIUsage.app/Contents/Helpers/aiusage ~/.local/bin/aiusage
   open /Applications/AIUsage.app
 fi
 echo "✓ 완료"

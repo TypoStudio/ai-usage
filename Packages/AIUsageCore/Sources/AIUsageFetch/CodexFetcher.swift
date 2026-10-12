@@ -1,15 +1,15 @@
 import AIUsageCore
 import Foundation
 
-enum CodexFetcher {
-    static func version(codexPath: String?) async -> String {
+public enum CodexFetcher {
+    public static func version(codexPath: String?) async -> String {
         guard let codexPath else { return "0.100.0" }
         let r = await Shell.run(codexPath, ["--version"], timeout: 10)
         let parts = String(decoding: r.stdout, as: UTF8.self).split(whereSeparator: \.isWhitespace)
         return parts.count >= 2 ? String(parts[1]) : "0.100.0"
     }
 
-    static func fetch(dir: String, version: String) async -> FetchOutcome {
+    public static func fetch(dir: String, version: String) async -> FetchOutcome {
         guard let d = FileManager.default.contents(atPath: "\(dir)/auth.json"),
               let auth = try? JSONSerialization.jsonObject(with: d) as? [String: Any] else {
             return .failed(String(localized: "auth.json 없음"), email: nil, raw: nil)

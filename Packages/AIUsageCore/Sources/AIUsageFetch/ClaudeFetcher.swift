@@ -1,14 +1,14 @@
 import AIUsageCore
 import Foundation
 
-enum ClaudeFetcher {
-    struct Credential: Sendable {
-        var token: String
-        var expiresAt: Date
-        var subscription: String?
+public enum ClaudeFetcher {
+    public struct Credential: Sendable {
+        public var token: String
+        public var expiresAt: Date
+        public var subscription: String?
     }
 
-    static func email(dir: String) -> String? {
+    public static func email(dir: String) -> String? {
         guard let d = FileManager.default.contents(atPath: "\(dir)/.claude.json"),
               let o = try? JSONSerialization.jsonObject(with: d) as? [String: Any] else { return nil }
         return (o["oauthAccount"] as? [String: Any])?["emailAddress"] as? String
@@ -17,7 +17,7 @@ enum ClaudeFetcher {
     /// Claude Code 의 자격 증명은 **읽기만** 한다 — 갱신은 `ClaudeOAuth`(앱 자체 토큰)로.
     /// 키체인은 `/usr/bin/security` 로 읽는다. Claude Code 가 만든 항목의 ACL 에 이미 들어 있어
     /// 앱을 다시 서명해도 매번 허용 창이 뜨지 않는다. 없으면 `.credentials.json` 폴백.
-    static func readCredential(dir: String) async -> Credential? {
+    public static func readCredential(dir: String) async -> Credential? {
         let svc = AccountDiscovery.claudeKeychainService(configDir: dir)
         let r = await Shell.run("/usr/bin/security", ["find-generic-password", "-s", svc, "-w"], timeout: 10)
         var data = r.status == 0 ? r.stdout : Data()
@@ -30,13 +30,13 @@ enum ClaudeFetcher {
                           subscription: oauth["subscriptionType"] as? String)
     }
 
-    static func version(claudePath: String?) async -> String {
+    public static func version(claudePath: String?) async -> String {
         guard let claudePath else { return "2.0.0" }
         let r = await Shell.run(claudePath, ["--version"], timeout: 10)
         return String(decoding: r.stdout, as: UTF8.self).split(separator: " ").first.map(String.init) ?? "2.0.0"
     }
 
-    static func fetch(token: String, subscription: String?, email: String?, version: String) async -> FetchOutcome {
+    public static func fetch(token: String, subscription: String?, email: String?, version: String) async -> FetchOutcome {
         do {
             let (data, status) = try await HTTP.get("https://api.anthropic.com/api/oauth/usage", headers: [
                 "Authorization": "Bearer \(token)",

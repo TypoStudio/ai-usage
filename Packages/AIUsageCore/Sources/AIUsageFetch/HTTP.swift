@@ -28,7 +28,7 @@ enum HTTP {
 }
 
 /// 한 계정 조회의 결과.
-enum FetchOutcome: Sendable {
+public enum FetchOutcome: Sendable {
     case ok(ParsedUsage, email: String?, raw: Data)
     /// 토큰 만료·인증 실패 — 자동 갱신이 안 되는 상태라 사용자가 로그인해야 한다
     case expired(String, email: String?, raw: Data?)

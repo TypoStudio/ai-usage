@@ -27,6 +27,9 @@ public enum SnapshotStore {
 
     public static let staleInterval: TimeInterval = 10 * 60
 
+    /// 스냅샷과 같은 형식의 JSON (CLI 출력용)
+    public static func encode(_ snapshot: Snapshot) throws -> Data { try encoder.encode(snapshot) }
+
     static let encoder: JSONEncoder = {
         let e = JSONEncoder(); e.dateEncodingStrategy = .iso8601; e.outputFormatting = [.prettyPrinted, .sortedKeys]; return e
     }()

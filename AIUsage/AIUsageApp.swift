@@ -1,4 +1,5 @@
 import AIUsageCore
+import AIUsageFetch
 import AppKit
 import ServiceManagement
 import SwiftUI
