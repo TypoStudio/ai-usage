@@ -40,6 +40,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Notifier.requestAuthorization()
+        relaunchStaleWidget()
         if !UsageModel.shared.isDemo { enableLaunchAtLoginOnce() }
         UsageModel.shared.start()
         // 로그인 시 자동 실행(백그라운드)일 때는 창을 띄우지 않는다
@@ -92,6 +93,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window?.makeKeyAndOrderFront(nil)
         window?.orderFrontRegardless()
         UsageModel.shared.refreshIfStale()
+    }
+
+    /// 앱을 새 버전으로 바꿔도 위젯 익스텐션 프로세스는 옛 바이너리로 계속 돈다 — 2026-10-12: 9/29 에 뜬 위젯이
+    /// 0.1.5 설치 뒤에도 남아 리로드를 받지 못해 값이 멈췄다. 죽이면 chronod 가 다음 리로드 때 설치본으로 다시 띄운다.
+    private func relaunchStaleWidget() {
+        let appex = Bundle.main.bundlePath + "/Contents/PlugIns/AIUsageWidget.appex/"
+        Task { _ = await Shell.run("/usr/bin/pkill", ["-f", appex], timeout: 5) }
     }
 
     /// 기획: 로그인 시 실행 기본 on — 안 켜면 위젯 값이 멈춘다
