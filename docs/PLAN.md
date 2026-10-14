@@ -88,7 +88,19 @@
   미리 갱신은 하지 않는다 — 돌고 있는 codex 와 갱신 토큰을 두고 경쟁하지 않도록.
 - 같은 Team 워크스페이스에 속한 계정은 `account_id`가 같다 → 크레딧 고갈 경고는 워크스페이스 단위로 한 번만 묶어 표시.
 
-### 4.3 공통 모델
+### 4.3 Antigravity (`agy`, 0.1.7~)
+- 계정 = `~/.gemini` 하나 (`~/.gemini/antigravity-cli` 가 있으면). 이메일은 키체인 토큰의 `id_token`.
+- 토큰: 키체인 service `gemini` / account `antigravity` (go-keyring: `go-keyring-base64:` + base64 JSON
+  `{token:{access_token,refresh_token,expiry}, id_token}`). `~/.gemini/oauth_creds.json` 은 agy 가 갱신하지 않는 옛 파일 — 읽지 않는다.
+- 갱신: `POST https://oauth2.googleapis.com/token` (client_id = id_token 의 `aud`, client_secret 은 agy 바이너리의 `GOCSPX-…`
+  문자열 — 저장소에 넣지 않는다). Google 갱신 토큰은 1회용이 아니라 agy 와 경쟁하지 않는다. 새 액세스 토큰은 앱 전용
+  키체인 항목 `AI Usage-antigravity-token` 에만 둔다.
+- 사용량: `POST https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist` → `cloudaicompanionProject`(예: `aicode-consumers`), `currentTier.name`,
+  이어서 `:retrieveUserQuotaSummary` 에 `{"project": …}` → `groups[].buckets[]{bucketId, window, remainingFraction, resetTime}`.
+  프로젝트 없이 부르면 403 `SUBSCRIPTION_REQUIRED (#3501)`. User-Agent 에 `antigravity` 가 있어야 한다 (`antigravity/<agy 버전> darwin/arm64`).
+- 링: `gemini-5h` 바깥, `gemini-weekly` 가운데, `3p-weekly`(Claude·GPT) 안쪽. 사용률 = `1 - remainingFraction`.
+
+### 4.4 공통 모델
 
 ```
 Provider { id: claude|codex, accounts: [Account] }

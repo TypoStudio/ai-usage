@@ -70,7 +70,11 @@ enum AccountCommand {
     /// 별칭(cld2 등)에 기대지 않는 명령
     static func command(for u: AccountUsage) -> String {
         let dir = u.id.replacingOccurrences(of: FileManager.default.homeDirectoryForCurrentUser.path, with: "~")
-        return u.provider == .claude ? "CLAUDE_CONFIG_DIR=\(dir) claude" : "CODEX_HOME=\(dir) codex login"
+        switch u.provider {
+        case .claude: return "CLAUDE_CONFIG_DIR=\(dir) claude"
+        case .codex: return "CODEX_HOME=\(dir) codex login"
+        case .antigravity: return "agy"
+        }
     }
 
     /// `.command` 파일을 여는 기본 터미널에서 명령을 실행한다. 로그인·대화형 셸이라 PATH 가 평소 터미널과 같다.

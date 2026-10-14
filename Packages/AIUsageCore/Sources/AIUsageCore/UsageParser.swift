@@ -72,15 +72,44 @@ public enum UsageParser {
                            workspaceID: obj["account_id"] as? String, limits: limits)
     }
 
+    /// `POST https://daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary` 응답 (Antigravity).
+    /// `groups[].buckets[]` 의 `remainingFraction` 은 남은 비율이라 사용률은 `1 - remainingFraction`.
+    /// 링: gemini-5h 바깥, gemini-weekly 가운데, 3p-weekly(Claude·GPT) 안쪽.
+    public static func parseAntigravity(_ data: Data, plan: String?) throws -> ParsedUsage {
+        guard let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw UsageParseError.invalid(snippet(data))
+        }
+        guard let groups = obj["groups"] as? [[String: Any]] else {
+            throw UsageParseError.invalid(errorMessage(obj) ?? snippet(data))
+        }
+        var limits: [Limit] = []
+        for g in groups {
+            for b in g["buckets"] as? [[String: Any]] ?? [] {
+                let id = b["bucketId"] as? String ?? "?"
+                let ring: RingSlot? = switch id {
+                case "gemini-5h": .outer
+                case "gemini-weekly": .middle
+                case "3p-weekly": .inner
+                default: nil
+                }
+                limits.append(Limit(name: id, percent: (1 - (number(b["remainingFraction"]) ?? 1)) * 100,
+                                    resetsAt: (b["resetTime"] as? String).flatMap(parseISO), ring: ring))
+            }
+        }
+        limits.sort { ($0.ring?.rawValue ?? 9) < ($1.ring?.rawValue ?? 9) }
+        return ParsedUsage(plan: plan, warning: nil, workspaceID: nil, limits: limits)
+    }
+
     /// JWT payload 의 `email`
-    public static func emailFromJWT(_ jwt: String) -> String? {
+    public static func emailFromJWT(_ jwt: String) -> String? { jwtPayload(jwt)?["email"] as? String }
+
+    public static func jwtPayload(_ jwt: String) -> [String: Any]? {
         let parts = jwt.split(separator: ".")
         guard parts.count >= 2 else { return nil }
         var s = parts[1].replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
         s += String(repeating: "=", count: (4 - s.count % 4) % 4)
-        guard let d = Data(base64Encoded: s),
-              let obj = try? JSONSerialization.jsonObject(with: d) as? [String: Any] else { return nil }
-        return obj["email"] as? String
+        guard let d = Data(base64Encoded: s) else { return nil }
+        return try? JSONSerialization.jsonObject(with: d) as? [String: Any]
     }
 
     public static func parseISO(_ s: String) -> Date? {

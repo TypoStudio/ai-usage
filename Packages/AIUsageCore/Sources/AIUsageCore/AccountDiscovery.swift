@@ -7,12 +7,20 @@ public struct DiscoveredAccount: Sendable, Hashable {
 }
 
 public enum AccountDiscovery {
-    /// `~/.claude-*` 중 `.claude.json` 이 있는 것, `~/.codex-*` 중 `auth.json` 이 있는 것.
+    /// `~/.claude-*` 중 `.claude.json` 이 있는 것, `~/.codex-*` 중 `auth.json` 이 있는 것,
+    /// Antigravity CLI(`agy`)는 `~/.gemini/antigravity-cli` 가 있으면 `~/.gemini` 하나.
     /// 순서: one, two, three… 숫자 단어 먼저, 나머지는 이름순.
     public static func discover(home: URL = FileManager.default.homeDirectoryForCurrentUser) -> [DiscoveredAccount] {
         let names = (try? FileManager.default.contentsOfDirectory(atPath: home.path)) ?? []
         var result: [DiscoveredAccount] = []
         for p in ProviderKind.allCases {
+            if p == .antigravity {
+                let dir = home.appendingPathComponent(".gemini")
+                if FileManager.default.fileExists(atPath: dir.appendingPathComponent("antigravity-cli").path) {
+                    result.append(DiscoveredAccount(provider: p, path: dir.path))
+                }
+                continue
+            }
             let prefix = p == .claude ? ".claude-" : ".codex-"
             let marker = p == .claude ? ".claude.json" : "auth.json"
             let dirs = names.filter { $0.hasPrefix(prefix) }
@@ -30,8 +38,9 @@ public enum AccountDiscovery {
         return "1" + suffix
     }
 
-    /// `~/.claude-two` → `cld2`, `~/.codex-lms` → `cdx-lms`
+    /// `~/.claude-two` → `cld2`, `~/.codex-lms` → `cdx-lms`, Antigravity 는 `agy`
     public static func defaultLabel(provider: ProviderKind, path: String) -> String {
+        if provider == .antigravity { return provider.labelPrefix }
         let base = (path as NSString).lastPathComponent
         let suffix = base.split(separator: "-", maxSplits: 1).dropFirst().first.map(String.init) ?? base
         if let i = numberWords.firstIndex(of: suffix) { return "\(provider.labelPrefix)\(i + 1)" }

@@ -155,6 +155,54 @@
         }
       }
     },
+    "Antigravity 계정": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity アカウント"
+          }
+        }
+      }
+    },
+    "Antigravity 계정 선택": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Antigravity account"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity アカウントを選択"
+          }
+        }
+      }
+    },
+    "Antigravity 사용량": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity usage"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity 使用量"
+          }
+        }
+      }
+    },
     "ChatGPT 토큰 없음": {
       "localizations": {
         "en": {
@@ -283,6 +331,54 @@
         }
       }
     },
+    "agy 경로": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "agy path"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "agy のパス"
+          }
+        }
+      }
+    },
+    "agy 로그인 정보가 없습니다 — 터미널에서 agy 를 실행해 로그인하세요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No agy sign-in found — run agy in a terminal and sign in"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "agy のログイン情報がありません — ターミナルで agy を実行してログインしてください"
+          }
+        }
+      }
+    },
+    "agy 실행 파일을 찾지 못해 토큰을 갱신할 수 없습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't refresh the token: the agy executable was not found"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "agy 実行ファイルが見つからずトークンを更新できません"
+          }
+        }
+      }
+    },
     "auth.json 없음": {
       "localizations": {
         "en": {
@@ -394,6 +490,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "更新中…"
+          }
+        }
+      }
+    },
+    "갱신 토큰 없음": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No refresh token"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リフレッシュトークンがありません"
           }
         }
       }
@@ -618,6 +730,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "リリースページを開く"
+          }
+        }
+      }
+    },
+    "링 게이지 하나. 바깥 Gemini 5시간, 가운데 Gemini 주간, 안쪽 Claude·GPT 주간.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One ring gauge. Outer: Gemini 5-hour, middle: Gemini weekly, inner: Claude/GPT weekly."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リングゲージ1つ。外側 Gemini 5時間、中 Gemini 週間、内側 Claude・GPT 週間。"
           }
         }
       }

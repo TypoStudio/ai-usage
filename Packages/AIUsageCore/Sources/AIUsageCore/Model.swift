@@ -1,11 +1,23 @@
 import Foundation
 
 public enum ProviderKind: String, Codable, Sendable, CaseIterable, Identifiable {
-    case claude, codex
+    case claude, codex, antigravity
     public var id: String { rawValue }
-    public var title: String { self == .claude ? "Claude Code" : "Codex" }
-    /// 라벨 접두사 (`cld1`, `cdx1`)
-    public var labelPrefix: String { self == .claude ? "cld" : "cdx" }
+    public var title: String {
+        switch self {
+        case .claude: return "Claude Code"
+        case .codex: return "Codex"
+        case .antigravity: return "Antigravity"
+        }
+    }
+    /// 라벨 접두사 (`cld1`, `cdx1`, `agy`)
+    public var labelPrefix: String {
+        switch self {
+        case .claude: return "cld"
+        case .codex: return "cdx"
+        case .antigravity: return "agy"
+        }
+    }
 }
 
 /// 게이지의 동심원 링 위치. 바깥 = 5시간, 가운데 = 주간 전체, 안쪽 = 주간 모델별(Fable).

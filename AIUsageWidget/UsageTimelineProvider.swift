@@ -42,9 +42,11 @@ struct UsageTimelineProvider<Intent: ProviderAccountIntent>: AppIntentTimelinePr
 
 extension Snapshot {
     static func placeholder(_ p: ProviderKind) -> Snapshot {
-        let names: [(String, RingSlot)] = p == .claude
-            ? [("session", .outer), ("weekly_all", .middle), ("weekly/Fable", .inner)]
-            : [("5h", .outer), ("7d", .middle)]
+        let names: [(String, RingSlot)] = switch p {
+        case .claude: [("session", .outer), ("weekly_all", .middle), ("weekly/Fable", .inner)]
+        case .codex: [("5h", .outer), ("7d", .middle)]
+        case .antigravity: [("gemini-5h", .outer), ("gemini-weekly", .middle), ("3p-weekly", .inner)]
+        }
         let accounts = (1...3).map { i in
             AccountUsage(id: "placeholder-\(i)", provider: p, label: "\(p.labelPrefix)\(i)", email: "user\(i)@example.com",
                          limits: names.enumerated().map { j, n in

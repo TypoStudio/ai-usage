@@ -19,6 +19,7 @@ enum Prefs {
     static let notifyRefreshFailure = "notifyRefreshFailure"  // 기본 true
     static let claudePath = "claudePath"
     static let codexPath = "codexPath"
+    static let agyPath = "agyPath"
     static let accounts = "accounts"
     static let firedAlerts = "firedAlerts"
     static let launchAtLoginInitialized = "launchAtLoginInitialized"

@@ -6,16 +6,27 @@ public enum AccountFetcher {
     public static let loginRequired = String(localized: "로그인이 필요합니다 — ‘로그인’ 을 누르면 이후 앱이 스스로 갱신합니다")
 
     /// `claude`/`codex` 실행 파일의 버전 — User-Agent 에 쓴다. `override` 는 설정에서 지정한 경로.
-    public static func versions(claudePath: String?, codexPath: String?) async -> (claude: String, codex: String) {
-        async let c = ClaudeFetcher.version(claudePath: Shell.locate("claude", override: claudePath))
-        async let x = CodexFetcher.version(codexPath: Shell.locate("codex", override: codexPath))
-        return await (c, x)
+    public struct Versions: Sendable {
+        public var claude: String
+        public var codex: String
+        public var agy: String
+        public init(claude: String = "2.0.0", codex: String = "0.100.0", agy: String = "1.3.4") {
+            self.claude = claude; self.codex = codex; self.agy = agy
+        }
     }
 
-    public static func fetch(provider: ProviderKind, dir: String, claudeVersion: String, codexVersion: String) async -> FetchOutcome {
+    public static func versions(claudePath: String?, codexPath: String?, agyPath: String?) async -> Versions {
+        async let c = ClaudeFetcher.version(claudePath: Shell.locate("claude", override: claudePath))
+        async let x = CodexFetcher.version(codexPath: Shell.locate("codex", override: codexPath))
+        async let a = AntigravityFetcher.version(agyPath: Shell.locate("agy", override: agyPath))
+        return await Versions(claude: c, codex: x, agy: a)
+    }
+
+    public static func fetch(provider: ProviderKind, dir: String, versions: Versions) async -> FetchOutcome {
         switch provider {
-        case .claude: return await fetchClaude(dir: dir, version: claudeVersion)
-        case .codex: return await CodexFetcher.fetch(dir: dir, version: codexVersion)
+        case .claude: return await fetchClaude(dir: dir, version: versions.claude)
+        case .codex: return await CodexFetcher.fetch(dir: dir, version: versions.codex)
+        case .antigravity: return await AntigravityFetcher.fetch(dir: dir, version: versions.agy)
         }
     }
 

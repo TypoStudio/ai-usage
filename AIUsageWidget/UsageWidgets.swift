@@ -7,6 +7,7 @@ struct AIUsageWidgetBundle: WidgetBundle {
     var body: some Widget {
         ClaudeUsageWidget()
         CodexUsageWidget()
+        AntigravityUsageWidget()
     }
 }
 
@@ -27,6 +28,17 @@ struct CodexUsageWidget: Widget {
                                provider: UsageTimelineProvider<CodexAccountIntent>()) { UsageWidgetView(entry: $0) }
             .configurationDisplayName("Codex 사용량")
             .description("계정마다 링 게이지 하나. 바깥 5시간, 가운데 7일.")
+            .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+            .contentMarginsDisabled()
+    }
+}
+
+struct AntigravityUsageWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "AntigravityUsageWidget", intent: AntigravityAccountIntent.self,
+                               provider: UsageTimelineProvider<AntigravityAccountIntent>()) { UsageWidgetView(entry: $0) }
+            .configurationDisplayName("Antigravity 사용량")
+            .description("링 게이지 하나. 바깥 Gemini 5시간, 가운데 Gemini 주간, 안쪽 Claude·GPT 주간.")
             .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
             .contentMarginsDisabled()
     }

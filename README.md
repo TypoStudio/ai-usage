@@ -28,6 +28,7 @@ A macOS **desktop widget** that shows the usage limits of several **Claude Code*
 - 🧩 **Separate Claude Code and Codex widgets** — small (one account), medium (three accounts), and large (three accounts with numbers).
 - 🔴 **Alert colors** — a ring turns red past your threshold (default 90%). A dashed gray gauge means the token expired or the request failed.
 - 🔎 **Auto-discovery** — finds `~/.claude-*` and `~/.codex-*` config directories. Turn accounts on or off and reorder them in Settings.
+- 🪐 **Antigravity too** — the `agy` CLI account shows up as a third provider with its Gemini and Claude/GPT weekly and 5-hour pools, read from agy's own sign-in.
 - 🔑 **Automatic token refresh** — sign in once per Claude account inside the app; it then keeps its own OAuth session alive (the way CLIProxyAPI does) and never touches Claude Code's credentials. Codex tokens are refreshed the same way the Codex CLI does.
 - 🔔 **Notifications** — once when a limit crosses the threshold, when Codex workspace credits run out, and when a token refresh fails.
 - 🪟 **Detail window** — every account with each limit, its percentage, time left, and the exact reset date and time.
@@ -70,7 +71,7 @@ The app bundles an `aiusage` command that fetches the same numbers with the same
 
 ```
 aiusage            # every enabled account as JSON (same shape as snapshot.json)
-aiusage claude     # one provider only (claude | codex)
+aiusage claude     # one provider only (claude | codex | antigravity)
 aiusage mcp        # MCP server over stdio, one tool: get_usage { provider? }
 ```
 
@@ -151,6 +152,7 @@ If you like this app, you can support it with a cup of coffee ☕
 - 🧩 **Claude Code·Codex 위젯 따로** — small(계정 1개), medium(계정 3개), large(계정 3개 + 숫자).
 - 🔴 **경고 색** — 임계치(기본 90%)를 넘은 링은 빨갛게 바뀝니다. 회색 점선 게이지는 토큰 만료나 요청 실패입니다.
 - 🔎 **계정 자동 탐지** — `~/.claude-*`, `~/.codex-*` 설정 디렉토리를 찾습니다. 설정에서 켜고 끄고 순서를 바꿀 수 있습니다.
+- 🪐 **Antigravity 도** — `agy` CLI 계정이 세 번째 프로바이더로 잡혀 Gemini·Claude/GPT 의 주간·5시간 풀을 보여 줍니다. agy 의 로그인 정보를 그대로 읽습니다.
 - 🔑 **토큰 자동 갱신** — Claude 계정마다 앱에서 한 번 로그인하면 앱이 자기 OAuth 세션을 스스로 유지합니다(CLIProxyAPI 방식). Claude Code 의 자격 증명은 건드리지 않습니다. Codex 토큰은 codex CLI 와 같은 방식으로 갱신합니다.
 - 🔔 **알림** — 한도가 임계치를 넘을 때, Codex 워크스페이스 크레딧이 떨어질 때, 토큰 갱신이 실패할 때 한 번씩 알립니다.
 - 🪟 **상세 창** — 모든 계정의 한도별 퍼센트, 남은 시간, 정확한 리셋 일시.
@@ -193,7 +195,7 @@ xattr -dr com.apple.quarantine /Applications/AIUsage.app
 
 ```
 aiusage            # 켜진 계정 전체를 JSON 으로 (snapshot.json 과 같은 형식)
-aiusage claude     # 한 프로바이더만 (claude | codex)
+aiusage claude     # 한 프로바이더만 (claude | codex | antigravity)
 aiusage mcp        # MCP 서버(stdio). 도구 get_usage { provider? } 하나
 ```
 

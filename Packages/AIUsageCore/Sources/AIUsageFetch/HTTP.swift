@@ -17,11 +17,15 @@ enum HTTP {
     }
 
     static func post(_ url: String, json: [String: String], headers: [String: String] = [:]) async throws -> (Data, Int) {
+        try await post(url, body: try JSONSerialization.data(withJSONObject: json), headers: headers)
+    }
+
+    static func post(_ url: String, body: Data, contentType: String = "application/json", headers: [String: String] = [:]) async throws -> (Data, Int) {
         var req = URLRequest(url: URL(string: url)!)
         req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue(contentType, forHTTPHeaderField: "Content-Type")
         headers.forEach { req.setValue($1, forHTTPHeaderField: $0) }
-        req.httpBody = try JSONSerialization.data(withJSONObject: json)
+        req.httpBody = body
         let (data, resp) = try await session.data(for: req)
         return (data, (resp as? HTTPURLResponse)?.statusCode ?? 0)
     }

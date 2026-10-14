@@ -129,3 +129,34 @@ import Testing
     let json = #"{"rate_limit":{"primary_window":{"used_percent":1,"limit_window_seconds":1800}}}"#
     #expect(try UsageParser.parseCodex(Data(json.utf8)).limits.first?.name == "30m")
 }
+
+@Test func antigravityBucketsMapToRings() throws {
+    let json = """
+    {"groups":[
+      {"displayName":"Gemini Models","buckets":[
+        {"bucketId":"gemini-weekly","window":"weekly","remainingFraction":0.9954,"resetTime":"2026-10-21T00:42:42Z"},
+        {"bucketId":"gemini-5h","window":"5h","remainingFraction":0.75,"resetTime":"2026-10-14T05:54:34Z"}]},
+      {"displayName":"Claude and GPT models","buckets":[
+        {"bucketId":"3p-weekly","window":"weekly","remainingFraction":1},
+        {"bucketId":"3p-5h","window":"5h","remainingFraction":0.5}]}
+    ]}
+    """
+    let u = try UsageParser.parseAntigravity(Data(json.utf8), plan: "Antigravity")
+    #expect(u.plan == "Antigravity")
+    #expect(u.limits.map(\.name) == ["gemini-5h", "gemini-weekly", "3p-weekly", "3p-5h"])
+    #expect(u.limits.map(\.ring) == [.outer, .middle, .inner, nil])
+    #expect(abs(u.limits[0].percent - 25) < 0.001)
+    #expect(u.limits[2].percent == 0)
+    #expect(u.limits[1].resetsAt == UsageParser.parseISO("2026-10-21T00:42:42Z"))
+}
+
+@Test func antigravityErrorBody() {
+    let json = #"{"error":{"code":403,"message":"You do not have a valid license of this product.","status":"PERMISSION_DENIED"}}"#
+    #expect(throws: UsageParseError.invalid("You do not have a valid license of this product.")) {
+        try UsageParser.parseAntigravity(Data(json.utf8), plan: nil)
+    }
+}
+
+@Test func antigravityDiscoveryAndLabel() {
+    #expect(AccountDiscovery.defaultLabel(provider: .antigravity, path: "/Users/a/.gemini") == "agy")
+}

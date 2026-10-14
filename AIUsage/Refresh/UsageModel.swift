@@ -24,8 +24,7 @@ final class UsageModel: ObservableObject {
     private var screensAsleep = false
     private var lastWidgetReload = Date.distantPast
     private var lastWidgetPayload: Data?
-    private var claudeVersion: String?
-    private var codexVersion: String?
+    private var versions: AccountFetcher.Versions?
 
     /// `--demo`: README 스크린샷용 가짜 계정. 조회·스냅샷 쓰기·알림을 모두 건너뛴다.
     let isDemo = CommandLine.arguments.contains("--demo")
@@ -132,18 +131,15 @@ final class UsageModel: ObservableObject {
     }
 
     private func resolveVersions() async {
-        guard claudeVersion == nil || codexVersion == nil else { return }
+        guard versions == nil else { return }
         let d = UserDefaults.standard
-        let v = await AccountFetcher.versions(claudePath: d.string(forKey: Prefs.claudePath), codexPath: d.string(forKey: Prefs.codexPath))
-        claudeVersion = v.claude
-        codexVersion = v.codex
+        versions = await AccountFetcher.versions(claudePath: d.string(forKey: Prefs.claudePath), codexPath: d.string(forKey: Prefs.codexPath),
+                                                 agyPath: d.string(forKey: Prefs.agyPath))
     }
 
     private func refreshAccount(_ config: AccountConfig) async {
         if let b = backoff[config.id], b.until > Date() { return }
-        let outcome = await AccountFetcher.fetch(provider: config.provider, dir: config.id,
-                                                 claudeVersion: claudeVersion ?? "2.0.0", codexVersion: codexVersion ?? "0.100.0")
-        apply(outcome, to: config)
+        apply(await AccountFetcher.fetch(provider: config.provider, dir: config.id, versions: versions ?? .init()), to: config)
     }
 
     private func apply(_ outcome: FetchOutcome, to config: AccountConfig) {

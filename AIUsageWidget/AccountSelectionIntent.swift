@@ -46,6 +46,23 @@ struct CodexAccountEntity: AppEntity {
     }
 }
 
+struct AntigravityAccountEntity: AppEntity {
+    var id: String
+    var label: String
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Antigravity 계정"
+    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(label)") }
+    static let defaultQuery = AntigravityQuery()
+
+    struct AntigravityQuery: EntityQuery {
+        func entities(for identifiers: [String]) async throws -> [AntigravityAccountEntity] {
+            try await suggestedEntities().filter { identifiers.contains($0.id) }
+        }
+        func suggestedEntities() async throws -> [AntigravityAccountEntity] {
+            accountEntities(.antigravity).map { a in AntigravityAccountEntity(id: a.id, label: a.email.map { "\(a.label) · \($0)" } ?? a.label) }
+        }
+    }
+}
+
 struct ClaudeAccountIntent: ProviderAccountIntent {
     static let title: LocalizedStringResource = "Claude 계정 선택"
     static let description = IntentDescription("small 크기에서 보여 줄 계정. 비우면 첫 번째 계정.")
@@ -59,5 +76,13 @@ struct CodexAccountIntent: ProviderAccountIntent {
     static let description = IntentDescription("small 크기에서 보여 줄 계정. 비우면 첫 번째 계정.")
     @Parameter(title: "계정") var account: CodexAccountEntity?
     static var provider: ProviderKind { .codex }
+    var accountID: String? { account?.id }
+}
+
+struct AntigravityAccountIntent: ProviderAccountIntent {
+    static let title: LocalizedStringResource = "Antigravity 계정 선택"
+    static let description = IntentDescription("small 크기에서 보여 줄 계정. 비우면 첫 번째 계정.")
+    @Parameter(title: "계정") var account: AntigravityAccountEntity?
+    static var provider: ProviderKind { .antigravity }
     var accountID: String? { account?.id }
 }

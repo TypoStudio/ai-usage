@@ -112,16 +112,13 @@ public enum ClaudeOAuth {
     // `security -i` 에 명령을 stdin 으로 넘기고 비밀은 hex 로 적어 ps·따옴표 문제를 피한다.
 
     public static func load(dir: String) async -> Token? {
-        let r = await Shell.run("/usr/bin/security", ["find-generic-password", "-s", keychainService, "-a", dir, "-w"], timeout: 10)
-        guard r.status == 0 else { return nil }
-        return try? decoder.decode(Token.self, from: r.stdout)
+        guard let data = await AppKeychain.read(service: keychainService, account: dir) else { return nil }
+        return try? decoder.decode(Token.self, from: data)
     }
 
     public static func save(_ token: Token, dir: String) async throws {
-        let hex = try encoder.encode(token).map { String(format: "%02x", $0) }.joined()
-        let cmd = "add-generic-password -U -a \"\(dir)\" -s \"\(keychainService)\" -X \(hex)\n"
-        let r = await Shell.run("/usr/bin/security", ["-i"], input: Data(cmd.utf8), timeout: 15)
-        guard r.status == 0 else { throw Failure.keychain(r.status) }
+        let status = await AppKeychain.write(service: keychainService, account: dir, data: try encoder.encode(token))
+        guard status == 0 else { throw Failure.keychain(status) }
     }
 
     private static let encoder: JSONEncoder = { let e = JSONEncoder(); e.dateEncodingStrategy = .secondsSince1970; return e }()

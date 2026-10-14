@@ -127,6 +127,7 @@ private struct AlertsTab: View {
 private struct GeneralTab: View {
     @AppStorage(Prefs.claudePath) private var claudePath = ""
     @AppStorage(Prefs.codexPath) private var codexPath = ""
+    @AppStorage(Prefs.agyPath) private var agyPath = ""
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var autoCheckUpdates = UpdateService.autoCheckEnabled
 
@@ -143,6 +144,7 @@ private struct GeneralTab: View {
             ))
             TextField("claude 경로", text: $claudePath, prompt: Text(Shell.locate("claude", override: nil) ?? String(localized: "자동 탐색")))
             TextField("codex 경로", text: $codexPath, prompt: Text(Shell.locate("codex", override: nil) ?? String(localized: "자동 탐색")))
+            TextField("agy 경로", text: $agyPath, prompt: Text(Shell.locate("agy", override: nil) ?? String(localized: "자동 탐색")))
             LabeledContent("스냅샷 파일") {
                 Button("Finder에서 보기") {
                     if let url = SnapshotStore.fileURL { NSWorkspace.shared.activateFileViewerSelecting([url]) }
