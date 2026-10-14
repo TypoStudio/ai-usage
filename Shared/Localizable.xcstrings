@@ -910,18 +910,18 @@
         }
       }
     },
-    "순서가 위젯의 게이지 순서입니다. 드래그해서 바꾸세요. medium 위젯에는 앞의 3개가 들어갑니다.": {
+    "순서가 위젯의 게이지 순서입니다. 드래그해서 바꾸세요. medium 위젯에는 앞의 3개가 들어갑니다. 프로바이더 순서는 ▲▼ 로 바꿉니다.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This order is the gauge order in the widget. Drag to change it. The medium widget shows the first three."
+            "value": "This order is the gauge order in the widget. Drag to change it. The medium widget shows the first three. Use ▲▼ to reorder providers."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "この順番がウィジェットのゲージの順番です。ドラッグで変更できます。medium ウィジェットには先頭の3つが入ります。"
+            "value": "この順番がウィジェットのゲージの順番です。ドラッグで変更できます。medium ウィジェットには先頭の3つが入ります。 プロバイダーの順序は ▲▼ で変えます。"
           }
         }
       }
@@ -970,6 +970,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "実行"
+          }
+        }
+      }
+    },
+    "아래로": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Down"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下へ"
           }
         }
       }
@@ -1130,6 +1146,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "リクエスト制限(429) — %lld分後に再試行"
+          }
+        }
+      }
+    },
+    "위로": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上へ"
           }
         }
       }

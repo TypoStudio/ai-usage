@@ -21,6 +21,7 @@ enum Prefs {
     static let codexPath = "codexPath"
     static let agyPath = "agyPath"
     static let accounts = "accounts"
+    static let providerOrder = "providerOrder"       // 상세 창·설정의 프로바이더 섹션 순서 (rawValue 배열)
     static let firedAlerts = "firedAlerts"
     static let launchAtLoginInitialized = "launchAtLoginInitialized"
 

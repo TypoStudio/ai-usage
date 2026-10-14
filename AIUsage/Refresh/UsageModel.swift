@@ -10,6 +10,8 @@ final class UsageModel: ObservableObject {
     static let shared = UsageModel()
 
     @Published var accounts: [AccountConfig] = []
+    /// 상세 창·설정·스냅샷의 프로바이더 순서. 저장된 순서 뒤에 새로 생긴 프로바이더를 붙인다.
+    @Published private(set) var providerOrder: [ProviderKind] = ProviderKind.allCases
     @Published private(set) var usages: [String: AccountUsage] = [:]
     @Published private(set) var rawResponses: [String: String] = [:]
     @Published private(set) var lastUpdated: Date?
@@ -31,6 +33,8 @@ final class UsageModel: ObservableObject {
 
     private init() {
         Prefs.registerDefaults()
+        let saved = (UserDefaults.standard.stringArray(forKey: Prefs.providerOrder) ?? []).compactMap(ProviderKind.init(rawValue:))
+        providerOrder = saved + ProviderKind.allCases.filter { !saved.contains($0) }
         if isDemo {
             (accounts, usages) = DemoData.make()
             lastUpdated = Date()
@@ -42,7 +46,21 @@ final class UsageModel: ObservableObject {
         for u in SnapshotStore.load().accounts { usages[u.id] = u }
     }
 
-    var enabledAccounts: [AccountConfig] { accounts.filter(\.enabled) }
+    /// 켜진 계정을 프로바이더 순서대로 (같은 프로바이더 안에서는 설정 순서 유지)
+    var enabledAccounts: [AccountConfig] {
+        let rank = Dictionary(uniqueKeysWithValues: providerOrder.enumerated().map { ($1, $0) })
+        return accounts.filter(\.enabled).enumerated()
+            .sorted { (rank[$0.element.provider] ?? 9, $0.offset) < (rank[$1.element.provider] ?? 9, $1.offset) }
+            .map(\.element)
+    }
+
+    /// 프로바이더 섹션을 위(-1)·아래(+1)로 한 칸 옮긴다
+    func moveProvider(_ p: ProviderKind, by delta: Int) {
+        guard let i = providerOrder.firstIndex(of: p), providerOrder.indices.contains(i + delta) else { return }
+        providerOrder.swapAt(i, i + delta)
+        UserDefaults.standard.set(providerOrder.map(\.rawValue), forKey: Prefs.providerOrder)
+        if !isDemo { writeSnapshot(force: true) }
+    }
 
     func usage(for config: AccountConfig) -> AccountUsage {
         var u = usages[config.id] ?? AccountUsage(id: config.id, provider: config.provider, label: config.label, status: .refreshing)

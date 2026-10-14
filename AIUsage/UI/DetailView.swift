@@ -15,7 +15,7 @@ struct DetailView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        ForEach(ProviderKind.allCases) { p in
+                        ForEach(model.providerOrder) { p in
                             section(p).id(p)
                         }
                     }

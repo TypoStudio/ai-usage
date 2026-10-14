@@ -22,13 +22,22 @@ private struct AccountsTab: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("순서가 위젯의 게이지 순서입니다. 드래그해서 바꾸세요. medium 위젯에는 앞의 3개가 들어갑니다.")
+            Text("순서가 위젯의 게이지 순서입니다. 드래그해서 바꾸세요. medium 위젯에는 앞의 3개가 들어갑니다. 프로바이더 순서는 ▲▼ 로 바꿉니다.")
                 .font(.callout).foregroundStyle(.secondary)
             List {
-                ForEach(ProviderKind.allCases) { p in
-                    Section(p.title) {
+                ForEach(model.providerOrder) { p in
+                    Section {
                         ForEach(model.accounts.filter { $0.provider == p }) { a in row(a) }
                             .onMove { from, to in move(provider: p, from: from, to: to) }
+                    } header: {
+                        HStack {
+                            Text(p.title)
+                            Spacer()
+                            Button { model.moveProvider(p, by: -1) } label: { Image(systemName: "chevron.up") }
+                                .buttonStyle(.borderless).disabled(model.providerOrder.first == p).help("위로")
+                            Button { model.moveProvider(p, by: 1) } label: { Image(systemName: "chevron.down") }
+                                .buttonStyle(.borderless).disabled(model.providerOrder.last == p).help("아래로")
+                        }
                     }
                 }
             }
