@@ -27,6 +27,8 @@ final class UsageModel: ObservableObject {
     private var lastWidgetReload = Date.distantPast
     private var lastWidgetPayload: Data?
     private var versions: AccountFetcher.Versions?
+    private var authenticationSetupCount = 0
+    private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
 
     /// `--demo`: README 스크린샷용 가짜 계정. 조회·스냅샷 쓰기·알림을 모두 건너뛴다.
     let isDemo = CommandLine.arguments.contains("--demo")
@@ -92,6 +94,36 @@ final class UsageModel: ObservableObject {
         refresh()
     }
 
+    /// 새 환경은 로그인 전에도 목록에 남겨 두며, 프로바이더를 파일 내용에서 추측하지 않는다.
+    func registerSetupAccounts(paths: [String], provider: ProviderKind) {
+        var updated = accounts
+        for path in paths {
+            if let index = updated.firstIndex(where: { $0.id == path }) {
+                updated[index].manual = true
+                continue
+            }
+            let enabledCount = updated.filter { $0.provider == provider && $0.enabled }.count
+            updated.append(AccountConfig(id: path, provider: provider,
+                                         label: AccountDiscovery.defaultLabel(provider: provider, path: path),
+                                         enabled: enabledCount < AccountStore.defaultEnabledPerProvider,
+                                         manual: true))
+        }
+        updateAccounts(updated)
+    }
+
+    /// 진행 중인 토큰 쓰기가 끝난 뒤 환경을 이전한다. 새 갱신은 완료할 때까지 보류한다.
+    func beginAuthenticationSetup() async {
+        authenticationSetupCount += 1
+        if isRefreshing {
+            await withCheckedContinuation { refreshWaiters.append($0) }
+        }
+    }
+
+    func endAuthenticationSetup() {
+        authenticationSetupCount = max(0, authenticationSetupCount - 1)
+        if authenticationSetupCount == 0 { refresh() }
+    }
+
     func hide(_ id: String) {
         updateAccounts(accounts.map { var a = $0; if a.id == id { a.enabled = false }; return a })
     }
@@ -133,7 +165,7 @@ final class UsageModel: ObservableObject {
     }
 
     func refresh() {
-        guard !isRefreshing, !isDemo, !screensAsleep else { return }
+        guard !isRefreshing, !isDemo, !screensAsleep, authenticationSetupCount == 0 else { return }
         isRefreshing = true
         let targets = enabledAccounts
         Task {
@@ -143,6 +175,9 @@ final class UsageModel: ObservableObject {
             }
             lastUpdated = Date()
             isRefreshing = false
+            let waiters = refreshWaiters
+            refreshWaiters.removeAll()
+            for waiter in waiters { waiter.resume() }
             writeSnapshot(force: false)
             Notifier.evaluate(enabledAccounts.map(usage(for:)))
         }

@@ -28,6 +28,7 @@ A macOS **desktop widget** that shows the usage limits of several **Claude Code*
 - 🧩 **Separate Claude Code and Codex widgets** — small (one account), medium (three accounts), and large (three accounts with numbers).
 - 🔴 **Alert colors** — a ring turns red past your threshold (default 90%). A dashed gray gauge means the token expired or the request failed.
 - 🔎 **Auto-discovery** — finds `~/.claude-*` and `~/.codex-*` config directories. Turn accounts on or off and reorder them in Settings.
+- 🗂️ **Authentication environments** — create separate Claude Code or Codex account folders in Settings, with shared preferences, a change preview, and a backup before setup. New environments appear in the account list before login.
 - 🪐 **Antigravity too** — the `agy` CLI account shows up as a third provider with its Gemini and Claude/GPT weekly and 5-hour pools, read from agy's own sign-in.
 - 🔑 **Automatic token refresh** — sign in once per Claude account inside the app; it then keeps its own OAuth session alive (the way CLIProxyAPI does) and never touches Claude Code's credentials. Codex tokens are refreshed the same way the Codex CLI does.
 - 🔔 **Notifications** — once when a limit crosses the threshold, when Codex workspace credits run out, and when a token refresh fails.
@@ -82,6 +83,14 @@ MCP config, e.g. for Claude Code (`claude mcp add aiusage -- aiusage mcp`) or an
 ```
 
 Token refresh is shared with the app through a file lock, so running both at once is safe.
+
+## Set up separate accounts
+
+Open **Settings → Accounts → Authentication Setup…**, choose Claude Code or Codex, and enter your account names. Review the preview, then create the environments. Close CLI sessions before applying changes; the app waits for its own usage refresh to finish before setup.
+
+Setup shares only the supported settings and resource folders. Credentials and account sessions stay separate. Existing conflicting files stop setup so you can resolve them without losing data. The result shows the backup location and commands to sign in to each account. Moving a Claude configuration directory can require signing in again because its Keychain entry depends on the directory path.
+
+Shell helpers are loaded in new zsh sessions; MCP sync and account email display require `jq`. Claude MCP configuration uses the shared `mcp.json` as its source; switching or syncing replaces each account's MCP list with that file. If Codex later replaces the shared `config.toml` link with a regular file, review the conflict before running setup again.
 
 ## How it works
 
@@ -152,6 +161,7 @@ If you like this app, you can support it with a cup of coffee ☕
 - 🧩 **Claude Code·Codex 위젯 따로** — small(계정 1개), medium(계정 3개), large(계정 3개 + 숫자).
 - 🔴 **경고 색** — 임계치(기본 90%)를 넘은 링은 빨갛게 바뀝니다. 회색 점선 게이지는 토큰 만료나 요청 실패입니다.
 - 🔎 **계정 자동 탐지** — `~/.claude-*`, `~/.codex-*` 설정 디렉토리를 찾습니다. 설정에서 켜고 끄고 순서를 바꿀 수 있습니다.
+- 🗂️ **인증 환경 생성** — 설정에서 Claude Code·Codex의 계정별 폴더와 공통 설정을 구성합니다. 변경 미리보기와 백업을 제공하며, 로그인 전에도 새 환경을 계정 목록에 표시합니다.
 - 🪐 **Antigravity 도** — `agy` CLI 계정이 세 번째 프로바이더로 잡혀 Gemini·Claude/GPT 의 주간·5시간 풀을 보여 줍니다. agy 의 로그인 정보를 그대로 읽습니다.
 - 🔑 **토큰 자동 갱신** — Claude 계정마다 앱에서 한 번 로그인하면 앱이 자기 OAuth 세션을 스스로 유지합니다(CLIProxyAPI 방식). Claude Code 의 자격 증명은 건드리지 않습니다. Codex 토큰은 codex CLI 와 같은 방식으로 갱신합니다.
 - 🔔 **알림** — 한도가 임계치를 넘을 때, Codex 워크스페이스 크레딧이 떨어질 때, 토큰 갱신이 실패할 때 한 번씩 알립니다.
@@ -206,6 +216,14 @@ MCP 설정 예 — Claude Code 는 `claude mcp add aiusage -- aiusage mcp`, 그 
 ```
 
 토큰 갱신은 앱과 파일 잠금으로 조율하므로 둘을 동시에 써도 안전합니다.
+
+## 인증 환경 설정
+
+**설정 → 계정 → 인증 환경 설정…**에서 Claude Code 또는 Codex와 계정 이름을 선택한 뒤 변경 내용을 미리 보고 생성합니다. 적용 전에 실행 중인 CLI를 종료하십시오. 앱 자체의 사용량 갱신은 완료될 때까지 기다린 후 설정을 변경합니다.
+
+지원하는 설정과 리소스만 공유하며 인증 정보와 계정별 세션은 분리합니다. 기존 파일과 충돌하면 덮어쓰지 않고 중단합니다. 완료 화면에서 백업 위치와 계정별 로그인 명령을 확인할 수 있습니다. Claude 디렉토리를 이동하면 경로에 연결된 키체인 항목이 달라져 다시 로그인해야 할 수 있습니다.
+
+셸 헬퍼는 새 zsh 세션에서 불러오며, MCP 동기화와 계정 이메일 표시에는 `jq`가 필요합니다. Claude MCP 목록은 공통 `mcp.json`이 기준이며 전환·동기화 시 각 계정의 목록을 교체합니다. Codex가 `config.toml` 링크를 일반 파일로 바꾼 경우 다시 설정하기 전에 충돌을 확인하십시오.
 
 ## 동작 원리
 

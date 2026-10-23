@@ -19,6 +19,7 @@ struct SettingsView: View {
 
 private struct AccountsTab: View {
     @EnvironmentObject private var model: UsageModel
+    @State private var showingSetup = false
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -44,11 +45,13 @@ private struct AccountsTab: View {
             HStack {
                 Button("경로 추가…") { addPath() }
                 Button("다시 탐지") { model.rediscover() }
+                Button("인증 환경 설정…") { showingSetup = true }
                 Spacer()
                 Button("지금 새로고침") { model.refresh() }
             }
         }
         .padding()
+        .sheet(isPresented: $showingSetup) { AuthenticationSetupView() }
     }
 
     private func row(_ a: AccountConfig) -> some View {

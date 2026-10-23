@@ -558,6 +558,86 @@
         }
       }
     },
+    "계정 디렉토리를 생성하시겠습니까?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create account directories?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウント用ディレクトリを作成しますか？"
+          }
+        }
+      }
+    },
+    "계정 디렉토리와 공통 설정 링크를 만듭니다. 생성 전에 기존 설정을 백업합니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creates account directories and links to shared settings. Existing settings are backed up before creation."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウント用ディレクトリと共通設定へのリンクを作成します。作成前に既存の設定をバックアップします。"
+          }
+        }
+      }
+    },
+    "계정 목록에 추가했습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added to the account list."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウント一覧に追加しました。"
+          }
+        }
+      }
+    },
+    "계정 이름": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account Names"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウント名"
+          }
+        }
+      }
+    },
+    "계정 이름을 한 개 이상 입력하십시오.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter at least one account name."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アカウント名を1つ以上入力してください。"
+          }
+        }
+      }
+    },
     "계정마다 링 게이지 하나. 바깥 5시간, 가운데 7일.": {
       "localizations": {
         "en": {
@@ -650,6 +730,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ラベル"
+          }
+        }
+      }
+    },
+    "로그인 명령": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login Commands"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログインコマンド"
           }
         }
       }
@@ -766,6 +862,70 @@
         }
       }
     },
+    "모두 복사": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy All"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてコピー"
+          }
+        }
+      }
+    },
+    "미리보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレビュー"
+          }
+        }
+      }
+    },
+    "미리보기 중…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previewing…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレビュー中…"
+          }
+        }
+      }
+    },
+    "백업 위치": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup Location"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップ先"
+          }
+        }
+      }
+    },
     "버전 %@ (%@)": {
       "localizations": {
         "en": {
@@ -778,6 +938,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "バージョン %@ (%@)"
+          }
+        }
+      }
+    },
+    "변경 예정": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned Changes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更予定"
           }
         }
       }
@@ -862,6 +1038,70 @@
         }
       }
     },
+    "생성": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作成"
+          }
+        }
+      }
+    },
+    "생성 전에 기존 설정을 백업합니다. 기존 파일은 삭제하지 않습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Existing settings are backed up before creation. No existing files are deleted."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作成前に既存の設定をバックアップします。既存のファイルは削除しません。"
+          }
+        }
+      }
+    },
+    "생성…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作成…"
+          }
+        }
+      }
+    },
+    "생성된 계정 디렉토리": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Created Account Directories"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作成されたアカウント用ディレクトリ"
+          }
+        }
+      }
+    },
     "서버 응답 %lld": {
       "localizations": {
         "en": {
@@ -922,6 +1162,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "この順番がウィジェットのゲージの順番です。ドラッグで変更できます。medium ウィジェットには先頭の3つが入ります。 プロバイダーの順序は ▲▼ で変えます。"
+          }
+        }
+      }
+    },
+    "쉼표로 구분": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comma-separated"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カンマ区切り"
           }
         }
       }
@@ -1150,6 +1406,22 @@
         }
       }
     },
+    "위 명령으로 각 디렉토리에 한 번씩 로그인하십시오. 로그인하기 전에는 사용량을 가져올 수 없습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log in once in each directory with the commands above. Usage can't be fetched before login."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上のコマンドで各ディレクトリに一度ログインしてください。ログインするまで使用量は取得できません。"
+          }
+        }
+      }
+    },
     "위로": {
       "localizations": {
         "en": {
@@ -1214,6 +1486,22 @@
         }
       }
     },
+    "이름마다 설정 디렉토리를 하나씩 만듭니다. (~/.claude-<이름>, ~/.codex-<이름>)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One config directory is created per name (~/.claude-<name>, ~/.codex-<name>)."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前ごとに設定ディレクトリを1つ作成します（~/.claude-<名前>、~/.codex-<名前>）。"
+          }
+        }
+      }
+    },
     "인증 실패(%lld)": {
       "localizations": {
         "en": {
@@ -1226,6 +1514,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "認証失敗(%lld)"
+          }
+        }
+      }
+    },
+    "인증 환경 설정": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authentication Setup"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "認証環境の設定"
+          }
+        }
+      }
+    },
+    "인증 환경 설정…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authentication Setup…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "認証環境の設定…"
           }
         }
       }
@@ -1274,6 +1594,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動検出"
+          }
+        }
+      }
+    },
+    "적용 중…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applying…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "適用中…"
           }
         }
       }
@@ -1546,6 +1882,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "トークン応答を読み取れません"
+          }
+        }
+      }
+    },
+    "프로바이더": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Provider"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロバイダ"
           }
         }
       }
