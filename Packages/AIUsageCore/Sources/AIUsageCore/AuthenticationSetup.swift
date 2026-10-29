@@ -121,6 +121,11 @@ public struct AuthenticationSetup: Sendable {
             }
         }
         var manifest = ["# AI Usage authentication setup backup", "# original path\tkind\tlink target", ""]
+        // Runtime sockets and pipes cannot be backed up as regular files. Use a dedicated
+        // manager to skip only those items; errors copying persistent files still stop setup.
+        let copyFilter = BackupCopyFilter()
+        let backupManager = FileManager()
+        backupManager.delegate = copyFilter
         do {
             for src in plan.backupSources {
                 let node = Node.at(src)
@@ -133,12 +138,15 @@ public struct AuthenticationSetup: Sendable {
                     guard !plan.linkOnlyBackups.contains(src) else { continue }
                     let target = URL(fileURLWithPath: src).resolvingSymlinksInPath().path
                     if Node.at(target) != .missing {
-                        try fm.copyItem(atPath: target, toPath: "\(dir)/\((src as NSString).lastPathComponent)")
+                        try backupManager.copyItem(atPath: target, toPath: "\(dir)/\((src as NSString).lastPathComponent)")
                     }
                 default:
                     manifest.append("\(src)\t\(node.kind)\t")
-                    try fm.copyItem(atPath: src, toPath: "\(dir)/\((src as NSString).lastPathComponent)")
+                    try backupManager.copyItem(atPath: src, toPath: "\(dir)/\((src as NSString).lastPathComponent)")
                 }
+            }
+            for (path, kind) in copyFilter.skipped.sorted(by: { $0.key < $1.key }) {
+                manifest.append("\(path)\tskipped-\(kind)\t")
             }
             try Data((manifest.joined(separator: "\n") + "\n").utf8)
                 .write(to: URL(fileURLWithPath: "\(dir)/backup-manifest.txt"), options: .withoutOverwriting)
@@ -272,6 +280,25 @@ public struct AuthenticationSetup: Sendable {
     }
 
     static func posixError() -> POSIXError { POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+}
+
+/// Filters by file type without following symbolic links or changing source files.
+private final class BackupCopyFilter: NSObject, FileManagerDelegate {
+    private(set) var skipped: [String: String] = [:]
+
+    func fileManager(_ fileManager: FileManager, shouldCopyItemAt srcURL: URL, to dstURL: URL) -> Bool {
+        var info = stat()
+        // Let copyItem report inspection and read failures instead of silently omitting data.
+        guard lstat(srcURL.path, &info) == 0 else { return true }
+        let kind: String
+        switch info.st_mode & S_IFMT {
+        case S_IFSOCK: kind = "socket"
+        case S_IFIFO: kind = "fifo"
+        default: return true
+        }
+        skipped[srcURL.path] = kind
+        return false
+    }
 }
 
 /// 실제 파일 쓰기 시스템 호출. 테스트가 부분 쓰기·권한 실패를 재현할 때만 바꾼다.
@@ -598,7 +625,7 @@ struct Planner {
         }
         if !ops.isEmpty {
             warnings.insert("Quit every running \(layout.provider.title) session (terminal and IDE) before applying; their files are moved while they may be open. Pausing AI Usage refresh does not cover them.", at: 0)
-            summary.append("A full copy of the affected files is saved to ~/\(layout.provider.rawValue)-setup-backup-<date>/ before any change.")
+            summary.append("Files are backed up to ~/\(layout.provider.rawValue)-setup-backup-<date>/ before any change; runtime sockets and pipes are excluded and recorded in the backup manifest.")
         } else {
             summary.append("Already set up; nothing to change.")
         }

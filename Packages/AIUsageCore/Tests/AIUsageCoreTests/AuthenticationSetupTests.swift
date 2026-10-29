@@ -8,8 +8,8 @@ private final class FixtureHome {
     var path: String { url.standardizedFileURL.path }
     var setup: AuthenticationSetup { AuthenticationSetup(home: url) }
 
-    init(suffix: String = "") throws {
-        url = FileManager.default.temporaryDirectory.appendingPathComponent("aiusage-auth-\(UUID().uuidString)\(suffix)")
+    init(suffix: String = "", baseURL: URL = FileManager.default.temporaryDirectory) throws {
+        url = baseURL.appendingPathComponent("aiusage-auth-\(UUID().uuidString)\(suffix)")
         let real = FileManager.default.homeDirectoryForCurrentUser.standardizedFileURL.path
         precondition(url.lastPathComponent.hasPrefix("aiusage-auth-") && url.standardizedFileURL.path != real,
                      "fixture must not be the real home")
@@ -44,6 +44,31 @@ private final class FixtureHome {
 
     func read(_ rel: String) -> String? { try? String(contentsOfFile: p(rel), encoding: .utf8) }
     func node(_ rel: String) -> Node { Node.at(p(rel)) }
+
+    func boundSocket(_ rel: String) throws -> Int32 {
+        try mkdir((rel as NSString).deletingLastPathComponent)
+        var address = sockaddr_un()
+        address.sun_family = sa_family_t(AF_UNIX)
+        address.sun_len = UInt8(MemoryLayout<sockaddr_un>.size)
+        let bytes = Array(p(rel).utf8) + [0]
+        try #require(bytes.count <= MemoryLayout.size(ofValue: address.sun_path))
+        withUnsafeMutableBytes(of: &address.sun_path) { buffer in
+            buffer.copyBytes(from: bytes)
+        }
+        let fd = Darwin.socket(AF_UNIX, SOCK_STREAM, 0)
+        guard fd >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+        let status = withUnsafePointer(to: &address) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                Darwin.bind(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
+            }
+        }
+        guard status == 0 else {
+            let error = POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
+            close(fd)
+            throw error
+        }
+        return fd
+    }
 
     func json(_ rel: String) -> [String: Any]? {
         guard let d = FileManager.default.contents(atPath: p(rel)) else { return nil }
@@ -226,6 +251,62 @@ private func conflicts(_ body: () throws -> Void) -> [String] {
     #expect(h.node(".codex-two/config.toml") == .symlink(h.p(".codex-shared/config.toml")))
     #expect(h.node(".codex-two/AGENTS.md") == .symlink(h.p(".claude-shared/response-format.md")))
     #expect(result.loginCommands == ["CODEX_HOME='\(h.p(".codex-two"))' codex login"])
+}
+
+@Test(arguments: [false, true]) func codexBackupSkipsLiveIPCFiles(activeLink: Bool) throws {
+    // Unix socket paths must fit sun_path, so use a short fixture path.
+    let h = try FixtureHome(baseURL: URL(fileURLWithPath: "/tmp"))
+    let account = activeLink ? ".codex-one" : ".codex"
+    let auth = #"{"tokens":{"id_token":"fixture","refresh_token":"private"}}"#
+    try h.write("\(account)/auth.json", auth)
+    try #require(chmod(h.p("\(account)/auth.json"), 0o600) == 0)
+    try h.write("\(account)/config.toml", "model = \"fixture\"\n")
+    try h.write("\(account)/sessions/ipc.sock", "A regular file with a socket-like name")
+    try h.link("\(account)/session-link", to: "sessions/ipc.sock")
+    if activeLink { try h.link(".codex", to: h.p(account)) }
+    let fd = try h.boundSocket("\(account)/ipc/ipc.sock")
+    defer { close(fd) }
+    try #require(mkfifo(h.p("\(account)/ipc/events"), 0o600) == 0)
+
+    let plan = try h.setup.preview(provider: .codex, accounts: ["one", "two", "three", "personal"])
+    let result = try h.setup.apply(plan)
+    let backup = URL(fileURLWithPath: result.backupPath).appendingPathComponent(account)
+    #expect(try String(contentsOf: backup.appendingPathComponent("auth.json"), encoding: .utf8) == auth)
+    #expect(try FileManager.default.attributesOfItem(atPath: backup.appendingPathComponent("auth.json").path)[.posixPermissions] as? Int == 0o600)
+    #expect(try String(contentsOf: backup.appendingPathComponent("config.toml"), encoding: .utf8) == "model = \"fixture\"\n")
+    #expect(try String(contentsOf: backup.appendingPathComponent("sessions/ipc.sock"), encoding: .utf8) == "A regular file with a socket-like name")
+    #expect(Node.at(backup.appendingPathComponent("session-link").path) == .symlink("sessions/ipc.sock"))
+    #expect(Node.at(backup.appendingPathComponent("ipc/ipc.sock").path) == .missing)
+    #expect(Node.at(backup.appendingPathComponent("ipc/events").path) == .missing)
+    let manifest = try String(contentsOfFile: "\(result.backupPath)/backup-manifest.txt", encoding: .utf8)
+    #expect(manifest.contains("\(h.p("\(account)/ipc/ipc.sock"))\tskipped-socket\t"))
+    #expect(manifest.contains("\(h.p("\(account)/ipc/events"))\tskipped-fifo\t"))
+    #expect(h.node(".codex") == .symlink(h.p(".codex-one")))
+    #expect(h.read(".codex-one/auth.json") == auth)
+    #expect(h.node(".codex-two/auth.json") == .missing)
+    #expect(try FileManager.default.attributesOfItem(atPath: h.p(".codex-one/ipc/ipc.sock"))[.type] as? FileAttributeType == .typeSocket)
+    var pipeInfo = stat()
+    #expect(lstat(h.p(".codex-one/ipc/events"), &pipeInfo) == 0)
+    #expect(pipeInfo.st_mode & S_IFMT == S_IFIFO)
+}
+
+@Test func unreadableRegularFileStillStopsBackup() throws {
+    let h = try FixtureHome()
+    try h.write(".codex/auth.json", "PRIVATE")
+    try h.write(".codex/config.toml", "model = \"fixture\"\n")
+    try h.write(".codex/unreadable", "KEEP")
+    let plan = try h.setup.preview(provider: .codex, accounts: ["one", "two"])
+    try #require(chmod(h.p(".codex/unreadable"), 0) == 0)
+    defer { chmod(h.p(".codex/unreadable"), 0o600) }
+    do {
+        _ = try h.setup.apply(plan)
+        Issue.record("Expected a backup error for the unreadable regular file")
+    } catch AuthenticationSetupError.backupFailed {
+        #expect(h.node(".codex") == .directory)
+        #expect(h.node(".codex-one") == .missing)
+        #expect(h.read(".codex/auth.json") == "PRIVATE")
+        #expect(h.read(".codex/config.toml") == "model = \"fixture\"\n")
+    }
 }
 
 @Test func backsUpTargetDataOfSymlinkedActiveAccount() throws {

@@ -90,6 +90,8 @@ Open **Settings → Accounts → Authentication Setup…**, choose Claude Code o
 
 Setup shares only the supported settings and resource folders. Credentials and account sessions stay separate. Existing conflicting files stop setup so you can resolve them without losing data. The result shows the backup location and commands to sign in to each account. Moving a Claude configuration directory can require signing in again because its Keychain entry depends on the directory path.
 
+Backups skip runtime sockets and named pipes, and record those omissions in `backup-manifest.txt`. Credentials, settings, session files, and symbolic links are still backed up; a failure to copy those files stops setup.
+
 Shell helpers are loaded in new zsh sessions; MCP sync and account email display require `jq`. Claude MCP configuration uses the shared `mcp.json` as its source; switching or syncing replaces each account's MCP list with that file. If Codex later replaces the shared `config.toml` link with a regular file, review the conflict before running setup again.
 
 ## How it works
@@ -222,6 +224,8 @@ MCP 설정 예 — Claude Code 는 `claude mcp add aiusage -- aiusage mcp`, 그 
 **설정 → 계정 → 인증 환경 설정…**에서 Claude Code 또는 Codex와 계정 이름을 선택한 뒤 변경 내용을 미리 보고 생성합니다. 적용 전에 실행 중인 CLI를 종료하십시오. 앱 자체의 사용량 갱신은 완료될 때까지 기다린 후 설정을 변경합니다.
 
 지원하는 설정과 리소스만 공유하며 인증 정보와 계정별 세션은 분리합니다. 기존 파일과 충돌하면 덮어쓰지 않고 중단합니다. 완료 화면에서 백업 위치와 계정별 로그인 명령을 확인할 수 있습니다. Claude 디렉토리를 이동하면 경로에 연결된 키체인 항목이 달라져 다시 로그인해야 할 수 있습니다.
+
+백업에서는 실행 중 생성되는 소켓과 이름 있는 파이프를 제외하고 `backup-manifest.txt`에 기록합니다. 인증 정보, 설정, 세션 파일, 심볼릭 링크는 백업하며, 이 파일들의 복사에 실패하면 설정을 중단합니다.
 
 셸 헬퍼는 새 zsh 세션에서 불러오며, MCP 동기화와 계정 이메일 표시에는 `jq`가 필요합니다. Claude MCP 목록은 공통 `mcp.json`이 기준이며 전환·동기화 시 각 계정의 목록을 교체합니다. Codex가 `config.toml` 링크를 일반 파일로 바꾼 경우 다시 설정하기 전에 충돌을 확인하십시오.
 

@@ -6,7 +6,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION="${1:-0.1.8}"
+VERSION="${1:-0.1.9}"
 SIGN_IDENTITY="${SIGN_IDENTITY:-Apple Development}"
 if [ -z "${AIUSAGE_TEAM:-}" ]; then
   # 개인 키가 있는 유효한 서명 ID 중 첫 번째의 인증서에서 팀(OU)을 읽는다
